@@ -1,0 +1,243 @@
+<title>Slack Hackathon — What People Actually Feel</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;--pink:#e8449b;
+    --radius:15px;--radius-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.14;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.83em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  a{color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:36px}
+
+  .hero{background:linear-gradient(120deg,#4A154B,#611f69 48%,#8a2b7a 80%,#e8449b);color:#fff;border-radius:22px;padding:32px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-40px;top:-50px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(236,178,46,.4),transparent 65%)}
+  .hero .eyebrow{color:#f4d6ee}
+  .hero h1{font-size:29px;font-weight:850;color:#fff;margin-top:7px;max-width:22ch}
+  .hero p{color:#f6e7f3;margin:12px 0 0;max-width:70ch;font-size:15px}
+  .lawrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .law{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.24);border-radius:12px;padding:9px 14px;font-size:13px;font-weight:600;color:#fff}
+  .law b{color:#ffe08a}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* the razor line */
+  .razor{display:grid;grid-template-columns:1fr 1fr;gap:0;border-radius:16px;overflow:hidden;border:1px solid var(--line)}
+  .razor>div{padding:18px 20px}
+  .razor .hate{background:#fdf0f4}
+  .razor .love{background:#f2fbf7}
+  .razor h3{font-size:14px;font-weight:800;margin:0 0 10px;display:flex;align-items:center;gap:7px}
+  .razor .hate h3{color:var(--red)}.razor .love h3{color:#1a7a52}
+  .razor ul{margin:0;padding-left:16px;font-size:13px;color:var(--ink-2)}.razor li{margin:6px 0}
+  @media(max-width:640px){.razor{grid-template-columns:1fr}.razor .hate{border-bottom:1px solid var(--line)}}
+
+  /* quotes */
+  .quotes{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:720px){.quotes{grid-template-columns:1fr}}
+  .quote{background:var(--paper);border:1px solid var(--line);border-left:3px solid var(--pink);border-radius:0 12px 12px 0;padding:14px 16px}
+  .quote.warn{border-left-color:var(--red)}
+  .quote.pos{border-left-color:var(--green)}
+  .quote p{margin:0;font-size:13.5px;color:var(--ink);font-style:italic}
+  .quote .src{margin-top:8px;font-size:11.5px;color:var(--muted);font-style:normal}
+  .quote .src b{color:var(--aubergine-2);font-weight:700}
+  .quote .eng{color:var(--pink);font-weight:700}
+
+  /* verdict table */
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tbl th,.tbl td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{background:var(--wash-2);font-weight:750;color:var(--aubergine);font-size:11px;text-transform:uppercase;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b{color:var(--ink)}
+  .vb{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:999px;white-space:nowrap}
+  .vb.keep{background:#e6f7ef;color:#1a7a52}.vb.reshape{background:#e4f6fd;color:#1786a8}.vb.fold{background:#fef4de;color:#9a7412}.vb.kill{background:#fde7ee;color:#b01444}
+
+  /* recommendation */
+  .reco{border:2px solid var(--pink);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px -16px rgba(232,68,155,.5)}
+  .reco .rh{background:linear-gradient(120deg,#611f69,#e8449b);color:#fff;padding:20px 22px}
+  .reco .rh .k{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#f4d6ee}
+  .reco .rh h3{font-size:22px;font-weight:850;color:#fff;margin-top:4px}
+  .reco .rh p{margin:8px 0 0;color:#f6e7f3;font-size:14px;max-width:72ch}
+  .reco .rb{padding:20px 22px;background:var(--paper)}
+  .halves{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.halves{grid-template-columns:1fr}}
+  .half{border:1px solid var(--line);border-radius:12px;padding:16px}
+  .half .tag{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--pink)}
+  .half h4{font-size:16px;font-weight:800;color:var(--aubergine);margin:3px 0 6px}
+  .half p{font-size:13px;color:var(--ink-2);margin:0 0 8px}
+  .half .beat{background:var(--wash);border-radius:9px;padding:10px 12px;font-size:12.5px;color:var(--ink-2)}
+  .half .beat b{color:var(--ink)}
+  .plus{text-align:center;font-weight:800;color:var(--pink);font-size:20px;margin:6px 0}
+  .why{margin-top:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  @media(max-width:640px){.why{grid-template-columns:1fr 1fr}}
+  .whyc{background:var(--wash-2);border-radius:10px;padding:10px 12px;text-align:center}
+  .whyc .i{font-size:18px}.whyc .t{font-size:11.5px;font-weight:700;color:var(--aubergine);margin-top:3px}
+  .whyc .d{font-size:10.5px;color:var(--muted);margin-top:2px}
+
+  .laws{border-left:4px solid var(--green);background:#f2fbf7;border-radius:0 12px 12px 0;padding:14px 18px;margin-top:16px;font-size:13.5px;color:var(--ink-2)}
+  .laws b{color:var(--ink)}
+
+  /* input */
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px;margin-top:16px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:13px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--pink);background:#fdeef7}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rec{font-size:10px;font-weight:800;color:#fff;background:var(--pink);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .gobtn{display:block;width:100%;margin-top:6px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .qbtn{margin-top:12px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:750;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Single Fable pass · X + Reddit + HN + web · every quote is a real person</div>
+    <h1>The real voice drew the line — with unusual precision</h1>
+    <p>You asked to ground this in how people actually feel. It broke two of the five ideas and sharpened the rest. The organizing law that fell out of the data: <b>people love the culture they make themselves — and roast any bot that performs fun at them.</b></p>
+    <div class="lawrow">
+      <span class="law">🚫 <b>PUSH</b> = roasted</span>
+      <span class="law">✅ <b>PULL</b> = loved</span>
+      <span class="law">💎 custom emoji = most-loved artifact</span>
+      <span class="law">🧩 puzzle ritual = only proven format</span>
+    </div>
+  </div>
+
+  <!-- THE RAZOR -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The razor line: push vs pull</h2></div>
+    <p class="sub">The single sharpest pattern across every platform. People don't hate fun at work — they hate fun <i>initiated at them</i> by a bot.</p>
+    <div class="razor">
+      <div class="hate">
+        <h3>🚫 What gets roasted</h3>
+        <ul>
+          <li>Bots that <b>initiate humor</b> or "yap"</li>
+          <li><b>Scheduled auto-content</b> (dies by February)</li>
+          <li><b>Pairing / matchmaking</b> people (Donut's rep)</li>
+          <li><b>Ranking people</b> (recognition → popularity contest)</li>
+          <li>Anything that <b>reads your offhand messages</b></li>
+        </ul>
+      </div>
+      <div class="love">
+        <h3>✅ What people love</h3>
+        <ul>
+          <li><b>Custom emoji</b> — their own vocabulary</li>
+          <li><b>Bounded puzzle rituals</b> (#wordle)</li>
+          <li>Agents that <b>respond only when summoned</b></li>
+          <li><b>Crowd-ratified</b>, opt-in, once-weekly</li>
+          <li><b>Receipt-linked</b> — proves it saw only public stuff</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTES -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The receipts — what people actually said</h2></div>
+    <p class="sub">A few of the load-bearing quotes. Full set with links in <code>sentiment-grounded-ideas.md</code>.</p>
+    <div class="quotes">
+      <div class="quote warn"><p>"I don't want slop bots in my group chats… I don't want it trying to be funny randomly or yapping."</p><div class="src"><b>@LukeParkerDev</b> · X · Jul 2026</div></div>
+      <div class="quote warn"><p>"What is 'Atlassian Karma'? Why is it replying to every single message?? What is Buzzkill Mode??"</p><div class="src"><b>@GergelyOrosz</b> (Pragmatic Engineer) · X · <span class="eng">1,789 likes / 398k views</span> — a recognition bot roasted at scale</div></div>
+      <div class="quote pos"><p>"Custom emojis… such a simple thing and yet they really build a channel's culture. Slack feels fun. Contrast that with Teams, which just feels soulless and corporate."</p><div class="src"><b>Hacker News</b> · the most-loved artifact in the whole corpus</div></div>
+      <div class="quote pos"><p>"I stole it from Allen Chen back in my Spotify days — and made sure it was the first custom emoji I uploaded when I started last year at storyarb."</p><div class="src"><b>LinkedIn</b> · people carry emoji between jobs like heirlooms</div></div>
+      <div class="quote pos"><p>"It's a water-cooler event in a time when those just don't exist anymore… share your score without any pangs of social anxiety or need for small talk."</p><div class="src"><b>#wordle channel</b> · reached ⅓ of the company within a week · the one proven fun format</div></div>
+      <div class="quote"><p>"early communities run on lore… but new people show up and did not live through any of it. to them, the lore is not magic. it is homework."</p><div class="src"><b>@rish_neynar</b> · X · the strategic quote of the pass</div></div>
+      <div class="quote warn"><p>"Strictly avoid gossip and informal chats on Slack… more so now with agentic AI being able to crawl everything in your enterprise tools."</p><div class="src"><b>r/LifeProTips</b> · <span class="eng">4,510 upvotes</span> — surveillance dread is accelerating in 2026</div></div>
+      <div class="quote"><p>"Would really like to find one that has truly helped engage a remote team and <b>not just annoy everyone in Slack.</b>"</p><div class="src"><b>r/Slack</b> · the whole bar, in one line</div></div>
+    </div>
+  </section>
+
+  <!-- VERDICT -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>Verdict on the five — tested against real voice</h2></div>
+    <div class="tscroll">
+      <table class="tbl">
+        <thead><tr><th>Idea</th><th>Verdict</th><th>Why the real voice says so</th></tr></thead>
+        <tbody>
+          <tr><td><b>Coined</b> → mint emoji from emergent language</td><td><span class="vb keep">KEEP</span></td><td>Sits on the most-loved artifact in Slack culture. Only reshape: crowd-ratifies the mint (not bot-decided), never faces, birth-certificate receipt.</td></tr>
+          <tr><td><b>Book of Lore</b> → decode inside jokes</td><td><span class="vb reshape">RESHAPE → PULL</span></td><td>Push-mode resurfacing is "trying to be funny randomly." Invert to pull: the newcomer <i>asks</i>. Becomes the purest permission-aware RTS showcase.</td></tr>
+          <tr><td><b>Insider</b> → daily inside-joke puzzle</td><td><span class="vb reshape">RESHAPE → WEEKLY</span></td><td>Puzzle ritual is the one proven format — but <i>daily</i> auto-content dies. Make it Friday + material-gated ("quiet week, no puzzle").</td></tr>
+          <tr><td><b>Field Awards</b> → weekly superlatives</td><td><span class="vb fold">FOLD</span></td><td>Ranks people → HeyTaco's own admitted popularity-contest decay. "Most Heroic Rescue at 6pm" celebrates overwork. Salvage the crowd-voted "moments" as one screen inside The Weekly.</td></tr>
+          <tr><td><b>Small World</b> → surface hidden shared interests</td><td><span class="vb kill">KILL</span></td><td>Donut's hated matchmaking <i>fused with</i> the exact AI-surveillance fear (4.5k-upvote thread). A DM saying "you both mentioned climbing" proves the bot reads everything. No non-creepy version exists.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- RECOMMENDATION -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>The recommendation</h2></div>
+    <div class="reco">
+      <div class="rh">
+        <div class="k">One agent · two wow beats · both impossible without RTS</div>
+        <h3>The agent that tends your team's living language</h3>
+        <p>Mint the new language, decode the old. It's built on the single most-loved thing in Slack culture (custom emoji), it's pull/consent-gated by construction (dodges every roasted failure mode), and permission-aware live search is the entire product — not decoration.</p>
+      </div>
+      <div class="rb">
+        <div class="halves">
+          <div class="half">
+            <div class="tag">Beat 1 · mint the new</div>
+            <h4>🪙 The Lexicon</h4>
+            <p>Detects a phrase/typo catching fire in real channels, the crowd ratifies with one reaction, the agent mints it as a custom emoji with a "birth certificate" deep-linked to the founding message.</p>
+            <div class="beat"><b>Demo:</b> a typo gets quoted → 🪙 appears → 3 teammates tap it → 30s later the emoji <i>exists</i>, with a certificate linking where it was born. "Officially entered the lexicon."</div>
+          </div>
+          <div class="half">
+            <div class="tag">Beat 2 · decode the old</div>
+            <h4>📖 Lorekeeper</h4>
+            <p>Anyone asks "what does <code>:knock-brush:</code> mean?" — the agent searches history <i>with the asker's own permissions</i> and answers with the origin story + receipts. Pull-only: it literally can't annoy.</p>
+            <div class="beat"><b>Demo:</b> new hire, day 3, quietly asks instead of admitting in-channel they don't get the joke → gets the full origin saga → uses the emoji correctly an hour later. Belonging, accelerated.</div>
+          </div>
+        </div>
+        <div class="plus">＋</div>
+        <div class="why">
+          <div class="whyc"><div class="i">💎</div><div class="t">Most-loved artifact</div><div class="d">emoji block tool-switching, get carried between jobs</div></div>
+          <div class="whyc"><div class="i">✅</div><div class="t">Pull / consent only</div><div class="d">dodges the push-cringe roast entirely</div></div>
+          <div class="whyc"><div class="i">🔍</div><div class="t">RTS load-bearing</div><div class="d">permission-aware live search IS the product</div></div>
+          <div class="whyc"><div class="i">🧾</div><div class="t">Receipt-linked</div><div class="d">proves it saw only public messages</div></div>
+        </div>
+        <div class="laws">⚖️ <b>Design laws baked in (from the sentiment):</b> never initiates humor · public channels only · every output deep-links its source · crowd-ratified, never bot-decided · never mints faces. <b>Optional 3rd beat —</b> <i>The Weekly</i>: a Friday Connections puzzle from the week's real threads (the one proven ritual), if you want a third demo moment.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISION -->
+  <section>
+    <div class="sh"><span class="num">05</span><h2>Your call</h2></div>
+    <div class="decision">
+      <form class="qform" data-lavish-question="scope"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('scope');if(v){window.lavish.queuePrompt('Slack build scope: '+v,{tag:'choice',text:v,data:{q:'scope',a:v}});}">
+        <div class="q">Greenlight "the agent that tends your team's living language"?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="scope" value="Ship Lexicon + Lorekeeper as one agent (two beats)" checked><span><span class="ot">🪙📖 Both beats — Lexicon + Lorekeeper <span class="rec">RECOMMENDED</span></span><span class="od">One coherent agent, two wow moments, both RTS-load-bearing. The full recommendation.</span></span></label>
+          <label class="opt"><input type="radio" name="scope" value="All three — add The Weekly puzzle as a third beat"><span><span class="ot">＋🧩 Add The Weekly puzzle</span><span class="od">Three beats. More demo surface, but more to build + the puzzle-generation risk.</span></span></label>
+          <label class="opt"><input type="radio" name="scope" value="Just Lexicon — the single strongest beat, tightest build"><span><span class="ot">🪙 Just The Lexicon</span><span class="od">One tight beat on the most-loved artifact. Lowest risk, less demo range.</span></span></label>
+          <label class="opt"><input type="radio" name="scope" value="Just Lorekeeper — the purest RTS / Agent-for-Good story"><span><span class="ot">📖 Just Lorekeeper</span><span class="od">Purest permission-aware RTS showcase; cleanest "Good" (newcomer inclusion) framing.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue scope</button>
+      </form>
+
+      <span data-lavish-action="build-spec" role="button" tabindex="0">
+        <button class="gobtn" type="button" onclick="window.lavish.queuePrompt('GO: develop the grounded concept into a full build spec + 3-min demo storyboard + AGENT_STATE.md, and run the 48h RTS/emoji cake spike (verify admin.emoji.add works in the free Enterprise Grid sandbox + RTS phrase-velocity detection). Use my queued scope. Design laws: pull-only, public-channel-only, receipt-linked, crowd-ratified, never faces.',{tag:'go',text:'🚀 Develop into a build spec + demo storyboard'});">🚀 Develop into a build spec + demo storyboard</button>
+      </span>
+      <div class="hint">Pick a scope, then hit build — or tell me in chat (including "I want to see the X sleuthing raw" or "reshape it differently"). Full report: <code>sentiment-grounded-ideas.md</code></div>
+    </div>
+  </section>
+
+  <div class="foot">Single Fable agent · 60 tool calls · X (after rate-limit cooldown) + Reddit thread-mining + HN Algolia + web · deliberately hunted disconfirming evidence · killed Small World, folded Field Awards</div>
+</div>

@@ -1,0 +1,191 @@
+<title>Contradiction Catcher — Build & Demo Spec</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;
+    --radius:14px;--radius-sm:9px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.15;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:36px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media(max-width:760px){.g2{grid-template-columns:1fr}}
+
+  .hero{background:linear-gradient(135deg,var(--aubergine),var(--aubergine-2) 62%,#7c2d84);color:#fff;border-radius:20px;padding:30px 30px}
+  .hero .eyebrow{color:#e9c9ec}
+  .hero h1{font-size:29px;font-weight:850;color:#fff;margin-top:6px}
+  .hero p{color:#f1e6f2;margin:12px 0 0;max-width:72ch;font-size:15px}
+  .verify{margin-top:16px;background:rgba(46,182,125,.18);border:1px solid rgba(46,182,125,.5);border-radius:12px;padding:12px 15px;font-size:13.5px;color:#eafaf3}
+  .verify b{color:#fff}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:22px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* architecture flow */
+  .flow{display:grid;gap:0}
+  .fstep{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;position:relative;padding:9px 0}
+  .fstep .idx{width:34px;height:34px;border-radius:9px;background:var(--aubergine);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px;z-index:1}
+  .fstep:not(:last-child):before{content:"";position:absolute;left:16px;top:38px;bottom:-4px;width:2px;background:var(--line)}
+  .fstep .body{padding-top:3px}
+  .fstep .t{font-weight:700;font-size:14.5px}
+  .fstep .d{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .tech{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;margin:5px 5px 0 0}
+  .tech.rts{background:#eafaf3;color:#1a7a52}.tech.mcp{background:#e4f6fd;color:#1786a8}.tech.bolt{background:#f3eef4;color:var(--aubergine-2)}.tech.llm{background:#fef4de;color:#9a7412}
+  .fstep.emergent .idx{background:var(--green)}
+  .fstep.emergent .t{color:#1a7a52}
+
+  /* stack chips */
+  .stack{display:flex;flex-wrap:wrap;gap:8px}
+  .schip{background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:7px 13px;font-size:13px;font-weight:600}
+  .schip b{color:var(--aubergine-2)}
+
+  /* seed table */
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{background:var(--wash-2);font-weight:750;color:var(--aubergine);font-size:11.5px;text-transform:uppercase;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl .neg{background:#fdf0f4}
+  .tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px}
+  .tag.see{background:#e6f7ef;color:#1a7a52}.tag.hide{background:#fde7ee;color:#b01444}
+
+  /* storyboard */
+  .board{display:grid;gap:10px}
+  .beat{display:grid;grid-template-columns:56px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 15px}
+  .beat .tc{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--aubergine-2)}
+  .beat .bt{font-weight:700;font-size:14px}
+  .beat .bd{font-size:13px;color:var(--ink-2);margin-top:3px}
+  .beat.kick{border-color:var(--green);background:#f2fbf7}
+  .beat.kick .tc{color:#1a7a52}
+  .slackmsg{margin-top:8px;border-left:3px solid var(--yellow);background:var(--wash);border-radius:0 8px 8px 0;padding:9px 12px;font-size:13px}
+  .slackmsg .who{font-weight:750}
+  .warn{border-left-color:var(--red)}
+  .warn .who{color:var(--red)}
+
+  ul.clean{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+  ul.clean li{display:flex;gap:10px;font-size:13.5px;color:var(--ink-2);align-items:flex-start}
+  ul.clean .b{flex:none;width:22px;height:22px;border-radius:6px;background:var(--wash-2);color:var(--aubergine-2);display:grid;place-items:center;font-size:12px;font-weight:800}
+  ul.clean b{color:var(--ink)}
+
+  .risk{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .risk .rr{display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--line)}
+  .risk .rr:last-child{border-bottom:none}
+  .risk .rl{padding:12px 14px;font-size:13px;border-right:1px solid var(--line)}
+  .risk .rl b{color:var(--red)}
+  .risk .rp{padding:12px 14px;font-size:13px;color:var(--ink-2);background:var(--wash)}
+  .risk .rp b{color:#1a7a52}
+  @media(max-width:640px){.risk .rr{grid-template-columns:1fr}.risk .rl{border-right:none;border-bottom:1px dashed var(--line)}}
+
+  .callout{border-left:4px solid var(--blue);background:#eef9fe;border-radius:0 10px 10px 0;padding:12px 15px;font-size:13px;color:var(--ink-2)}
+  .callout.amber{border-left-color:var(--yellow);background:#fffaf0}
+  .callout b{color:var(--ink)}
+  .foot{margin-top:36px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Contradiction Catcher · build & demo spec</div>
+    <h1>What we're actually building — and how it demos</h1>
+    <p>Stripped to the metal: a small event-driven Slack app that, when you "lock" a decision, does one permission-scoped live search and posts a warning if it collides with a prior decision <b>you're allowed to see</b>. No new database, no index, ~1 search + 1 LLM call + 2 writes.</p>
+    <div class="verify">✅ <b>The load-bearing claim is confirmed by Slack's own docs.</b> RTS (<code>assistant.search.context</code>) <i>"performs the search on behalf of the authenticated user, ensuring that only content the user has access to is returned."</i> The ACL boundary — the whole demo — is a property of the API, not something we fake.</div>
+  </div>
+
+  <!-- WHAT IT IS -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>In one breath</h2></div>
+    <div class="card">
+      <p style="margin:0 0 12px;font-size:15px">A teammate reacts <code>:lock:</code> on a message that settles a decision. The app wakes up, searches the workspace <b>as that person</b> for a conflicting earlier decision, and if it finds one, replies in-thread: <b>"⚠️ this contradicts @Dana's locked call in #product-private [jump →]."</b> A conflicting decision sitting in a channel that person <i>can't</i> see is silently, correctly ignored.</p>
+      <div class="callout"><b>Why it reads as an "agent," not a chatbot:</b> nobody types at it. It <b>perceives</b> (the lock), <b>retrieves</b> (RTS), <b>reasons</b> (is this a reversal or a refinement?), and <b>acts</b> (warn + reconcile) — autonomously, inside a real workflow, respecting permissions. That's the exact "generic chatbot in a Slack UI" trap, avoided.</div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The architecture — 1 search, 1 judgment, 2 writes</h2></div>
+    <p class="sub">Every arrow is a confirmed API. The magic step (7) is <b>emergent</b> — it's zero code.</p>
+    <div class="card">
+      <div class="flow">
+        <div class="fstep"><div class="idx">1</div><div class="body"><div class="t">Trigger</div><div class="d">You add <code>:lock:</code> to a message (or run a "Lock decision" shortcut). Slack pushes the event to our app over Socket Mode — no public URL needed.</div><span class="tech bolt">Bolt · reaction_added</span></div></div>
+        <div class="fstep"><div class="idx">2</div><div class="body"><div class="t">Read the decision</div><div class="d">Fetch the locked message's text.</div><span class="tech bolt">conversations.replies</span></div></div>
+        <div class="fstep"><div class="idx">3</div><div class="body"><div class="t">Extract the distinctive keyword</div><div class="d">Tiny Claude call: "what choice is being decided? give the rare topic token" → e.g. <code>Postgres</code>. Keeps the RTS query high-signal + deterministic.</div><span class="tech llm">Claude · temp 0</span></div></div>
+        <div class="fstep"><div class="idx">4</div><div class="body"><div class="t">One permission-scoped live search</div><div class="d"><code>assistant.search.context</code> in <b>keyword mode</b>, <code>channel_types</code> incl. <code>private_channel</code>, run <b>as the locker</b>. Returns only messages they can access — each with channel, author, <code>ts</code>, and a <b>permalink</b>.</div><span class="tech rts">RTS · assistant.search.context</span></div></div>
+        <div class="fstep"><div class="idx">5</div><div class="body"><div class="t">Judge: reversal vs refinement</div><div class="d">Claude at temp 0 with stark few-shot exemplars decides if any prior <i>locked</i> decision genuinely conflicts (Mongo↔Postgres) vs merely refines/echoes it.</div><span class="tech llm">Claude · classifier</span></div></div>
+        <div class="fstep"><div class="idx">6</div><div class="body"><div class="t">Act — warn + reconcile</div><div class="d">Thread reply: ⚠️ short quote + <code>chat.getPermalink</code> to the real prior message. Then a reconciliation <b>canvas</b>, both DRIs @-ed.</div><span class="tech bolt">chat.postMessage · canvases.create</span><span class="tech mcp">or via Slack MCP tools</span></div></div>
+        <div class="fstep emergent"><div class="idx">✦</div><div class="body"><div class="t">7 · The ACL boundary (zero code)</div><div class="d">A conflicting decision in a channel the locker <b>isn't in</b> is never returned by step 4 — so it's never surfaced. We write nothing to make this happen; it falls out of RTS searching <i>as the user</i>. This is the unfakeable, only-possible-with-RTS moment.</div><span class="tech rts">emergent from RTS permission model</span></div></div>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <div class="eyebrow">The stack (deliberately small)</div>
+        <div class="stack" style="margin-top:11px">
+          <span class="schip"><b>Bolt</b> for TypeScript</span>
+          <span class="schip"><b>Socket Mode</b> (demo) · Railway (judges)</span>
+          <span class="schip"><b>RTS API</b> — the required tech</span>
+          <span class="schip"><b>Claude</b> — keyword + classifier</span>
+          <span class="schip"><b>Web API</b> — post + canvas</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Honest simplification (de-risks the build)</div>
+        <ul class="clean" style="margin-top:11px">
+          <li><span class="b">1</span><span><b>RTS alone satisfies the required-tech gate.</b> MCP and Agent Builder are optional — build the canvas with plain <code>canvases.create</code> for reliability, add MCP only if time allows (stacks a 2nd pillar).</span></li>
+          <li><span class="b">2</span><span><b>Keyword mode only.</b> A natural-language question flips RTS into non-deterministic semantic mode — never phrase the query as a question.</span></li>
+          <li><span class="b">3</span><span><b>No new datastore.</b> RTS forbids storing its data — so we classify in-memory, surface via permalink, and persist nothing. That's simpler, not harder.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEMO -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>The demo — literal, &lt;3 minutes</h2></div>
+    <p class="sub">Pre-staged sandbox "Acme Robotics." You record as <b>Alex (PM)</b>. Three channels, two seeded prior decisions — one you can see, one you can't.</p>
+
+    <div class="tscroll">
+      <table class="tbl">
+        <thead><tr><th>Channel</th><th>Seeded (days ago)</th><th>Can Alex see it?</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>#product-private</code><br><small style="color:var(--muted)">Alex + Dana</small></td><td>@Dana 🔒 "standardize our datastore on <b>MongoDB</b>"</td><td><span class="tag see">YES — member</span></td><td>the catch</td></tr>
+          <tr class="neg"><td><code>#platform-infra</code><br><small style="color:var(--muted)">Alex NOT a member</small></td><td>@Sam 🔒 "going with <b>Cassandra</b> for the store"</td><td><span class="tag hide">NO — not in channel</span></td><td>negative control</td></tr>
+          <tr><td><code>#eng-decisions</code><br><small style="color:var(--muted)">public, Alex in</small></td><td>— (this is where the live moment happens)</td><td><span class="tag see">YES</span></td><td>the stage</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="board" style="margin-top:16px">
+      <div class="beat"><div class="tc">0:00</div><div><div class="bt">Cold open on a real thread</div><div class="bd">A wrap-up in <code>#eng-decisions</code>. Alex types the decision and reacts <code>:lock:</code>.</div><div class="slackmsg"><span class="who">Alex</span> · #eng-decisions<br>"Great review — we're standardizing on <b>Postgres</b>." 🔒</div></div></div>
+      <div class="beat"><div class="tc">0:08</div><div><div class="bt">The catch fires in-thread</div><div class="bd">~2–5s later the agent replies. Real author, real channel, real jump-link.</div><div class="slackmsg warn"><span class="who">⚠️ Contradiction Catcher</span><br>This conflicts with a locked decision by <b>@Dana</b> in <b>#product-private</b> (Jun 20): <i>"standardize on MongoDB."</i> &nbsp;<b>[Jump →]</b> · [Open reconciliation canvas]</div></div></div>
+      <div class="beat"><div class="tc">0:22</div><div><div class="bt">Prove it's real</div><div class="bd">Alex clicks <b>[Jump]</b> → lands on Dana's <i>actual</i> message in #product-private. Not a hallucinated string — a live permalink.</div></div></div>
+      <div class="beat"><div class="tc">0:34</div><div><div class="bt">The action</div><div class="bd">Open the <b>canvas</b>: Postgres vs MongoDB side-by-side, @Dana + @Alex tagged, "Which stands? Reconcile here."</div></div></div>
+      <div class="beat kick"><div class="tc">0:48</div><div><div class="bt">✦ The kicker — the unfakeable part</div><div class="bd">Narrator: "There's <b>also</b> a conflict — @Sam chose Cassandra — but it's in <code>#platform-infra</code>, which Alex isn't in. The agent searched <i>as Alex</i>, so it never saw it, and never leaked it." Cut to a workspace-owner view showing the Cassandra message really exists. <b>The permission boundary held. A bot indexing all of Slack would have exposed a private decision.</b></div></div></div>
+      <div class="beat"><div class="tc">1:05</div><div><div class="bt">Close</div><div class="bd">One architecture card + the impact line: "every catch is a duplicated workstream avoided — surfaced only to those cleared to see it."</div></div></div>
+    </div>
+    <div class="callout amber" style="margin-top:14px"><b>Recorded-fallback plan:</b> pre-record the happy path in case live RTS/classifier wobbles on the take. Seed data is permanent, so the negative-control frame is always reproducible. Keep explorer/owner views pre-opened in tabs.</div>
+  </section>
+
+  <!-- RISKS -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>The honest risks (and what the spike proves)</h2></div>
+    <p class="sub">Nothing here is a showstopper, but two are real unknowns the 48h spike must clear before we build polish. I'd rather name them now.</p>
+    <div class="risk">
+      <div class="rr"><div class="rl"><b>Risk 1 — identity mechanics.</b> To search "as the locker" across private channels we need either their user token (<code>xoxp</code> + <code>search:read.private</code>) or a bot token + the <code>action_token</code> from the event. Which triggers carry an action_token is the #1 thing to verify.</div><div class="rp"><b>Spike hour 1.</b> If the <code>:lock:</code> reaction doesn't carry an action_token, switch the trigger to a message shortcut / app-mention that does, or do a one-time user-token OAuth (fine for the demo — Alex authorizes once).</div></div>
+      <div class="rr"><div class="rl"><b>Risk 2 — the "no-store" rule.</b> RTS says you must not store/copy its data. Copying a prior decision's full text into a persisted canvas is a gray area.</div><div class="rp"><b>Design around it.</b> Surface via <b>permalink + a short quote</b> (Slack calls sharing sources a best practice), don't persist retrieved content in our own store. Simpler build, cleanly compliant.</div></div>
+      <div class="rr"><div class="rl"><b>Risk 3 — classifier determinism.</b> An LLM deciding "is this a reversal" can misfire (~4% residual).</div><div class="rp"><b>Temp 0 + stark seed + few-shot + record a fallback take.</b> On scripted Mongo↔Postgres contrast it's effectively deterministic.</div></div>
+      <div class="rr"><div class="rl"><b>Risk 4 — filming the negative control.</b> To show the hidden Cassandra conflict was correctly suppressed, the judge must believe it exists.</div><div class="rp"><b>Plan the second vantage:</b> a workspace-owner/admin account (sandbox gives you 8 users) that <i>can</i> see #platform-infra — quick cut to it in the recording.</div></div>
+    </div>
+    <div class="callout" style="margin-top:14px"><b>Bottom line:</b> the core loop (lock → search-as-you → warn + jump) is small and firmly buildable — Slack's docs confirm the ACL property that makes it special. The two genuine unknowns (identity mechanics, RTS result quality in keyword mode) are exactly what the <b>48h cake spike</b> exists to settle. If RTS underwhelms, the graceful pivot is <b>Leaving Brain</b> (search→render, no classifier gamble).</div>
+  </section>
+
+  <div class="foot">Spec for <code>~/Developer/slack-hackathon/</code> · pairs with <code>slackhack-decision-memo.md</code> + the kickoff board · RTS confirmed via <a href="https://docs.slack.dev/apis/web-api/real-time-search-api/">Slack RTS docs</a></div>
+</div>

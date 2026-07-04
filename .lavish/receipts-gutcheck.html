@@ -1,0 +1,169 @@
+<title>Receipts vs the Ghost of Contradiction Catcher</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;--pink:#e8449b;
+    --radius:15px;--radius-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.14;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.83em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:32px}
+
+  .hero{background:linear-gradient(120deg,#4A154B,#611f69 55%,#8a2b7a);color:#fff;border-radius:22px;padding:30px}
+  .hero .eyebrow{color:#f0c9e6}
+  .hero h1{font-size:27px;font-weight:850;color:#fff;margin-top:7px;max-width:24ch}
+  .hero p{color:#f2e0ee;margin:12px 0 0;max-width:72ch;font-size:15px}
+  .youpicked{margin-top:16px;display:flex;flex-wrap:wrap;gap:8px}
+  .yp{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);border-radius:10px;padding:8px 13px;font-size:13px;color:#fff}
+  .yp b{color:#ffe08a}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* the core question */
+  .core{background:#1d1c1d;color:#fff;border-radius:16px;padding:20px 22px;text-align:center}
+  .core .q{font-size:17px;font-weight:750}
+  .core .same{margin-top:12px;font-size:13.5px;color:#c9c7c9}
+  .core .same b{color:var(--yellow)}
+  .core .eng{display:inline-block;margin-top:10px;font-family:var(--mono);font-size:12px;background:rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;color:#fff}
+
+  /* both sides */
+  .sides{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.sides{grid-template-columns:1fr}}
+  .side{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  .side .sh2{padding:13px 16px;font-weight:800;font-size:14px;color:#fff}
+  .side.alive .sh2{background:linear-gradient(120deg,#1a7a52,#2eb67d)}
+  .side.dead .sh2{background:linear-gradient(120deg,#b01444,#e01e5a)}
+  .side ul{margin:0;padding:14px 16px 16px 32px;font-size:13px;color:var(--ink-2)}
+  .side li{margin:8px 0}
+  .side li b{color:var(--ink)}
+
+  /* verdict */
+  .verdict{border:2px solid var(--green);border-radius:16px;overflow:hidden;margin-top:6px}
+  .verdict .vh{background:linear-gradient(120deg,#1a7a52,#2eb67d);color:#fff;padding:16px 20px;font-weight:800;font-size:16px}
+  .verdict .vb{padding:18px 20px;background:var(--paper);font-size:14px;color:var(--ink-2)}
+  .verdict .vb b{color:var(--ink)}
+  .verdict .punch{background:#f2fbf7;border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:12px 15px;margin:12px 0;font-size:14px;color:var(--ink)}
+  .verdict .punch b{color:#1a7a52}
+  .risks{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:640px){.risks{grid-template-columns:1fr}}
+  .risk{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fffaf0;border-left:3px solid var(--yellow)}
+  .risk .t{font-weight:800;font-size:12.5px;color:#9a7412}
+  .risk p{margin:4px 0 0;font-size:12.5px;color:var(--ink-2)}
+
+  /* input */
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px;margin-top:16px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:13px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--green);background:#f2fbf7}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rec{font-size:10px;font-weight:800;color:#fff;background:var(--green);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .gobtn{display:block;width:100%;margin-top:6px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .qbtn{margin-top:12px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:750;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .foot{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">You picked Receipts + "argue the gut-check for me"</div>
+    <h1>Is Receipts genuinely alive — or the ghost of Contradiction Catcher?</h1>
+    <p>You leaned Receipts but weren't sure if your "no value" verdict poisons the whole decision-memory well. Here's the honest argument both ways, then my real read — no rubber-stamp.</p>
+    <div class="youpicked">
+      <span class="yp">① You chose: <b>Receipts</b></span>
+      <span class="yp">② Gut-check: <b>argue both sides</b></span>
+    </div>
+  </div>
+
+  <!-- CORE -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>First, the uncomfortable truth</h2></div>
+    <div class="core">
+      <div class="q">Receipts and Contradiction Catcher are the <span style="color:var(--yellow)">same engine</span>.</div>
+      <div class="same">Both are: RTS permission-aware search → find a prior decision/answer → post it with a verbatim quote + permalink. The engine is identical.</div>
+      <div class="eng">🔍 RTS search-as-you &nbsp;→&nbsp; 🧾 cite prior message w/ permalink</div>
+      <div class="same" style="margin-top:14px">What differs is <b>everything that determines value</b>: the trigger, the timing, and who gets the status. So the real question isn't "are they similar" — it's <b>"was your 'no value' about the engine, or the nanny wrapped around it?"</b></div>
+    </div>
+  </section>
+
+  <!-- BOTH SIDES -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The argument, both ways</h2></div>
+    <div class="sides">
+      <div class="side alive">
+        <div class="sh2">✅ Receipts is ALIVE (the nanny was the problem, not the engine)</div>
+        <ul>
+          <li><b>Demand-pull, not speculation.</b> CC fired on a hypothetical future conflict nobody felt. Receipts fires only when a human <i>wants</i> the receipt right now — the demand is proven at the moment of use.</li>
+          <li><b>Status flows to the summoner (Law 3).</b> CC nannied everyone and gave status to no one. Receipts hands the summoner the win — the cool-tool signature CC failed.</li>
+          <li><b>No new ritual to adopt.</b> CC needed people to perform a "decision-lock" nobody does. Receipts needs nothing — you're already arguing.</li>
+          <li><b>The proof is in your own reaction:</b> you got excited about Receipts, which <i>is</i> the engine. So the engine has appeal — it was the nanny framing you rejected.</li>
+          <li><b>Elite demo:</b> "the bot just ended him with a link from March" is a screenshot people post.</li>
+        </ul>
+      </div>
+      <div class="side dead">
+        <div class="sh2">💀 Receipts is DEAD (same well, new bucket)</div>
+        <ul>
+          <li><b>Same domain your gut flagged.</b> If "no value" was about <i>retrieving old decisions</i> as a category — not the mechanics — Receipts inherits it wholesale.</li>
+          <li><b>Frequency problem.</b> How often is an argument actually settled by a March permalink? Most disputes are opinion/priority/judgment, not "what did we decide." The subset a bot resolves is narrow — a great screenshot that <i>rarely fires</i> in real life.</li>
+          <li><b>Native-search shadow.</b> Slack's own AI search already answers "what did we decide about X." You're competing with a first-party feature — the same saturation that killed the utility lane.</li>
+          <li><b>Still workplace-utility-flavored.</b> Less cringe than a culture bot, but it isn't in a venue people <i>love</i> — it's a sharper tool in the same office.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- VERDICT -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>My honest read</h2></div>
+    <div class="verdict">
+      <div class="vh">Receipts is alive — but sharpen it, because its real risk isn't the ghost.</div>
+      <div class="vb">
+        <p>The engine was never what you rejected. A nanny that performs vigilance at everyone (CC) and a weapon you grab to win an argument (Receipts) are <b>categorically different</b> by Fable's own Law 3 — and your excitement about Receipts is the tell. <b>"No value" was the nanny, not the well.</b></p>
+        <div class="punch">So Receipts clears the gut-check. <b>But it has two real risks that have nothing to do with CC</b> — frequency and native-search — and those are the ones worth designing against.</div>
+        <div class="risks">
+          <div class="risk"><div class="t">⚠ Frequency</div><p>"Settle an argument with a permalink" is rare. Fix: broaden the summon to "where was this decided / what's the answer" — pointed at a venue where it fires <i>constantly</i>.</p></div>
+          <div class="risk"><div class="t">⚠ Native search</div><p>Slack AI answers this in workplaces. Fix: aim at <b>community</b> Slacks (OSS, cohort) and answer from <i>conversations that never became docs</i> — the clean gap.</p></div>
+        </div>
+        <p style="margin-top:14px"><b>Here's the punchline:</b> the sharpened Receipts and Third Time are <b>the same agent</b> — one engine, two summon moments. The argument-ender is the <b>hero demo beat</b> (spicy, screenshot-worthy); the repeat-question deflect is the <b>daily habit</b> (frequent, sticky). You don't have to choose the engine — just which beat leads the 3-minute demo. My vote: <b>lead the demo with Receipts, ship the FAQ-deflect as the "still using it next week" proof.</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISION -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>So — how do we frame the build?</h2></div>
+    <div class="decision">
+      <form class="qform" data-lavish-question="frame"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('frame');if(v){window.lavish.queuePrompt('Build frame: '+v,{tag:'choice',text:v,data:{q:'frame',a:v}});}">
+        <div class="q">One engine, which hero beat leads?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="frame" value="Receipts hero + FAQ-deflect as the sticky proof (one agent)" checked><span><span class="ot">🧾 Receipts hero + deflect as proof <span class="rec">MY VOTE</span></span><span class="od">Lead the demo with the argument-ender; the repeat-question FAQ loop is the "still using it next week" beat. Best of both.</span></span></label>
+          <label class="opt"><input type="radio" name="frame" value="Pure Receipts — argument-ender only, tightest build"><span><span class="ot">🧾 Pure Receipts only</span><span class="od">Just the summonable argument-ender. Tightest, spiciest, but the frequency risk is real.</span></span></label>
+          <label class="opt"><input type="radio" name="frame" value="Lead with Third Time deflect, Receipts as a bonus beat"><span><span class="ot">🔁 Third Time hero, Receipts bonus</span><span class="od">Lead with the sticky community-deflect; the receipt is a spicy secondary beat. Safer substance, softer demo.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue frame</button>
+      </form>
+
+      <span data-lavish-action="go" role="button" tabindex="0">
+        <button class="gobtn" type="button" onclick="window.lavish.queuePrompt('GO: develop the chosen frame into a full build spec + 3-min demo storyboard + AGENT_STATE.md + the 48h RTS cake spike. Use my queued frame.',{tag:'go',text:'🚀 Build the spec for the chosen frame'});">🚀 Build the spec + storyboard</button>
+      </span>
+      <div class="hint">Pick a frame, hit build — or tell me in chat if the "one engine, two beats" read is wrong.</div>
+    </div>
+  </section>
+
+  <div class="foot">Gut-check honored: argued both sides · verdict — engine ≠ nanny, so Receipts clears CC; real risks are frequency + native-search, both fixed by the community venue + FAQ beat</div>
+</div>

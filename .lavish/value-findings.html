@@ -1,0 +1,170 @@
+<title>Slack Hackathon — Value-First Findings (the hard truth)</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;
+    --radius:14px;--radius-sm:9px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.15;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.84em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:34px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .grid{display:grid;gap:14px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media(max-width:760px){.g2{grid-template-columns:1fr}}
+
+  .hero{background:linear-gradient(135deg,#3a1030,#4A154B 55%,#611f69);color:#fff;border-radius:20px;padding:30px}
+  .hero .eyebrow{color:#e9c9ec}
+  .hero h1{font-size:28px;font-weight:850;color:#fff;margin-top:6px}
+  .hero p{color:#f1e6f2;margin:12px 0 0;max-width:74ch;font-size:15px}
+  .verdict{margin-top:16px;background:rgba(224,30,90,.16);border:1px solid rgba(224,30,90,.5);border-radius:12px;padding:13px 16px;font-size:14px;color:#ffe3ec}
+  .verdict b{color:#fff}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 15px}
+
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{background:var(--wash-2);font-weight:750;color:var(--aubergine);font-size:11px;text-transform:uppercase;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b{color:var(--ink)}
+  .ev{font-size:12px;color:var(--muted);font-style:italic}
+
+  .cand{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:11px;background:var(--paper)}
+  .cand .top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:var(--wash-2)}
+  .cand .nm{font-weight:800;font-size:15px;color:var(--aubergine)}
+  .cand .nm small{font-weight:500;color:var(--muted);display:block;font-size:12px;letter-spacing:0;text-transform:none}
+  .score{font-family:var(--mono);font-size:12px;font-weight:700;color:#9a7412;background:#fef4de;border-radius:999px;padding:3px 10px;white-space:nowrap;flex:none}
+  .cand .kill{padding:12px 16px;font-size:13px;color:var(--ink-2)}
+  .cand .kill b{color:var(--red)}
+  .cand .who{font-family:var(--mono);font-size:11px;color:var(--aubergine-2);margin-top:6px}
+
+  .why{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+  .why>div{padding:16px 18px}
+  .why .l{border-right:1px solid var(--line)}
+  .why h3{font-size:14px;font-weight:800;margin-bottom:8px}
+  .why .l h3{color:var(--red)}.why .r h3{color:#1a7a52}
+  .why ul{margin:0;padding-left:16px;font-size:13px;color:var(--ink-2)}.why li{margin:5px 0}
+  @media(max-width:640px){.why{grid-template-columns:1fr}.why .l{border-right:none;border-bottom:1px solid var(--line)}}
+
+  .opts-sec{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px;margin-top:16px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--aubergine-2);background:var(--wash)}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rec{font-size:10px;font-weight:800;color:#fff;background:var(--green);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .qbtn{margin-top:14px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-weight:750;font-size:14px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .callout{border-left:4px solid var(--yellow);background:#fffaf0;border-radius:0 10px 10px 0;padding:13px 16px;font-size:13.5px;color:var(--ink-2)}
+  .callout.blue{border-left-color:var(--blue);background:#eef9fe}
+  .callout b{color:var(--ink)}
+  .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Value-first research · grounded in real signal · 18 agents · 1.1M tokens</div>
+    <h1>The obvious valuable ideas are all taken — and Slack itself is shipping them</h1>
+    <p>You were right to kill Contradiction Catcher. So I re-ran the whole thing value-first: ground in real user pain → generate → score on pain × adoption × delight × differentiation, with governance and tech-first ideas banned. The pains are real. But every credible concept ran into the same wall.</p>
+    <div class="verdict">⚠️ <b>All 7 finalists scored WEAK (4.8–5.5 / 10).</b> Not because the pain isn't real — because each one is already owned by a funded incumbent <b>and, in most cases, by Slack's own 2026 AI roadmap.</b> This is the honest finding, and it's strategically useful.</div>
+  </div>
+
+  <!-- THE REAL PAINS -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The grounding was real — these pains are genuine</h2></div>
+    <p class="sub">Pulled from actual Reddit threads, G2/Capterra reviews, and community forums — not assumed. The research worked; the problem is downstream.</p>
+    <div class="tscroll">
+      <table class="tbl">
+        <thead><tr><th>Real pain</th><th>Evidence</th><th>Who's already eating it</th></tr></thead>
+        <tbody>
+          <tr><td><b>The dropped ask</b><br>a request gets buried, you forget it, real fallout</td><td class="ev">r/Slack "my boss chewed me out for forgetting a Slack request" — "wish it did the Gmail 'been 5 days, respond?' thing"</td><td>🟥 <b>Slack's own Slackbot</b> (Mar 2026) now DMs you "requests that still need a response" + auto-logs commitments — free, native</td></tr>
+          <tr><td><b>Notification overload</b><br>#1 complaint by volume; "did I miss something?" anxiety</td><td class="ev">789 G2 mentions · 78% feel overwhelmed · interrupted ~every 5 min</td><td>🟥 Saturated (deemerge, Notara, DriftBox) + it's the rules' named losing pattern ("summarize my unread")</td></tr>
+          <tr><td><b>Broken search</b><br>keyword-exact, can't find the answer</td><td class="ev">~300 G2 mentions · 47% can't find info · up to 30% of the week lost searching</td><td>🟥 <b>Native Slack Enterprise Search</b> + Glean ($4B) — this is literally what RTS was built to power first-party</td></tr>
+          <tr><td><b>Decisions die in threads</b><br>no "official message," re-keyed into Jira by hand</td><td class="ev">"Slack is optimized for communication, not action; the WHY is spread across replies"</td><td>🟥 Rekap, Decision Tracker, Decision Desk, Loqbooq + native Slack MCP → Linear/Jira</td></tr>
+          <tr><td><b>Nonprofits priced out</b><br>can't afford paid AI features</td><td class="ev">Top r/Slack post of the year (1,090 upvotes) is a nonprofit pricing complaint</td><td>🟧 The one real opening — but these orgs are budget-less, fragile, and mostly on Discord</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- WHY EVERYTHING SCORED WEAK -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>Why every idea hit the same wall</h2></div>
+    <div class="callout"><b>The structural headwind:</b> the required tech (RTS / MCP) isn't a moat — it's a commodity <b>Slack itself is deploying across all of these exact workflows in 2026</b> (30 new AI features: personal digests, commitment tracking, decision logging to Linear via MCP, an onboarding agent template, expert-finding in Enterprise Search). Any third-party "agent" built on the same primitives is, by construction, <b>a feature Slack is racing to ship natively and better</b> — which guts both differentiation and criterion 2 ("wouldn't be possible without the required tech"). The more obvious and valuable the idea, the more certain Slack has already built it.</div>
+  </section>
+
+  <!-- CANDIDATES -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>The 7 candidates — and the exact prior art that kills each</h2></div>
+    <p class="sub">Deduped from 23 raw concepts. Ranked by value_ovr. None cleared the bar; the honest weakness is stated first.</p>
+
+    <div class="cand"><div class="top"><div class="nm">Amber <small>crisis-flag → route to a human mod · Good</small></div><span class="score">5.5 · WEAK</span></div><div class="kill"><b>Severe but rare + tech-first.</b> Peer-support lives on Discord, so the Slack user base is tiny and crisis events fire rarely — fails "frequent + widely felt." And RTS isn't load-bearing: crisis detection reads the message stream, routing is a presence lookup — neither needs permission-aware search. High safety liability. <div class="who">prior art: Discord "Suicide Prevention Bot" (mature, ML); 18Percent runs this on Slack already</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">Who Would Know <small>find + warm-intro the teammate who solved this · Either</small></div><span class="score">5.4 · WEAK</span></div><div class="kill"><b>The moat is illusory.</b> Content-aware expert matching in Slack is already owned by Starmind (acquired), Glean ($4B), and <b>native Slack Enterprise Search</b> ("identify SMEs from their contributions"). The RTS-as-you angle is self-contradicting — to match on convos the asker can't see you'd need cross-permission indexing (= Starmind's approach, and a leak risk). Episodic lookup, not a weekly ritual. <div class="who">prior art: Starmind, Glean, native Enterprise Search, Stack Overflow for Teams</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">First Shift <small>volunteer onboarding/retention concierge · Good</small></div><span class="score">5.4 · WEAK</span></div><div class="kill"><b>Both legs compromised.</b> The delightful leg ("celebrate the impact you made") needs per-volunteer data that lives in a VMS/spreadsheet, not Slack → degrades to generic "thanks!". The reliable leg (answer from past threads) is <b>exactly Slack's own official Onboarding Agent Template</b> — a judge sees Slack's canned demo with a nonprofit skin. <div class="who">prior art: Slack Onboarding Agent Template, Agentforce Channel Expert, GreetBot/CultureBot/Donut</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">Nice Catch <small>auto-detect invisible work → prompt a specific thank-you · Either</small></div><span class="score">5.2 · WEAK</span></div><div class="kill"><b>A vitamin, but with a real moat.</b> Under-recognition is diffuse (nobody <i>begs</i> for it), and the person who feels the pain isn't who installs it → no self-serve loop. BUT its one defensible claim held up: every recognition incumbent (HeyTaco, Bonusly, Matter) is genuinely still <b>manual</b> — auto-detection is real whitespace. Bot-prompted thanks may be worth less than spontaneous. <div class="who">prior art: incumbents are manual (moat real); but Question Base + UpAgents + Claude Tag circling the auto-detect angle</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">Loose Ends <small>personal open-loops copilot (the dropped ask) · Orgs</small></div><span class="score">5.0 · WEAK</span></div><div class="kill"><b>The strongest pain, the deadest lane.</b> This was the #1 most emotionally-charged wedge in the whole corpus — and <b>Slack's own Slackbot now ships both halves natively</b> (personal digest of unanswered requests + auto-logged commitments), free, with more context than any RTS app. It's a third-party rebuild of a flagship native feature, pitched to the company that just shipped it. <div class="who">prior art: native Slackbot 2026 + ClearFeed, Follow Up Bot, Chaser</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">Make It Real <small>capture a decision + write it to your tool of record · Orgs</small></div><span class="score">4.8 · WEAK</span></div><div class="kill"><b>Load-bearing differentiator is factually false.</b> The claimed gap ("integrations capture a ticket but drop the WHY") is filled by Rekap (near-verbatim clone), Decision Tracker, Loqbooq, Elium. Decision-frequency-gated (not a daily habit), and the space's gravity pulls straight toward the nag/governance flavor you rejected. <div class="who">prior art: Rekap, Decision Tracker, Decision Desk, Loqbooq + native Jira/Linear/Notion Slack agents</div></div></div>
+
+    <div class="cand"><div class="top"><div class="nm">Dispatch <small>mutual-aid need → volunteer matching · Good</small></div><span class="score">4.8 · WEAK</span></div><div class="kill"><b>Mis-models the domain + already built free.</b> Real dispatch runs on structured intake + a maintained roster + geocoding, not free-text chat — so "extract availability from conversation" is both demo-fragile and a worse data model → RTS is decoration. Groups are budget-less and mostly on Discord+Airtable. <div class="who">prior art: open-source astoria-tech/volunteer-dispatch is the exact concept, free</div></div></div>
+  </section>
+
+  <!-- STRATEGIC READ -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>My honest read</h2></div>
+    <div class="why">
+      <div class="l"><h3>Why this is hard to win well</h3><ul>
+        <li>Slack's 2026 platform pitch <i>is</i> "agents work here" — they're first-partying every high-value workflow.</li>
+        <li>RTS/MCP are commodities, not moats — the differentiation has to come from the <b>idea</b>, and the obvious ideas are colonized.</li>
+        <li>The judges are Slack/Salesforce DevRel — they know exactly what's on their own roadmap.</li>
+        <li>Chasing the rubric got us a hollow idea; chasing value got us saturated ones. That's a real signal about this specific hackathon.</li>
+      </ul></div>
+      <div class="r"><h3>Where a real opening still exists</h3><ul>
+        <li><b>A lane Slack won't build:</b> Slack ships enterprise utility, never <b>fun / culture / delight</b>. That lane is genuinely unexplored here and it's where you have taste.</li>
+        <li><b>Distribution, not novelty:</b> the Good track rewards <b>giving a community a paid-gated capability free</b> — value = access, and Slack has no incentive to serve budget-less orgs.</li>
+        <li><b>Nice Catch is the one with a verified structural moat</b> (every incumbent is manual) — if it's reframed from vitamin toward a ritual you'd personally love.</li>
+      </ul></div>
+    </div>
+    <div class="callout blue" style="margin-top:14px"><b>The bigger question worth asking out loud:</b> you're also holding the <b>Reddit "Games with a Hook"</b> hackathon (Jul 15, $40K + $5K Phaser) — a <b>creative/fun/community</b> arena with far less first-party saturation and much more room for taste and delight. Same ~8-day window. It may simply be a better use of your build time than fighting Slack's roadmap. That's a live option, not a distraction.</div>
+  </section>
+
+  <!-- DECISION -->
+  <section>
+    <div class="sh"><span class="num">05</span><h2>Where do you want to point next?</h2></div>
+    <p class="sub">No forced winner this time — the research says none of these clears the bar as-is. So the call is strategic, and it's yours.</p>
+    <div class="opts-sec">
+      <form class="qform" data-lavish-question="direction"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('direction');if(v){window.lavish.queuePrompt('Slack hackathon strategic direction: '+v,{tag:'choice',text:v,data:{q:'direction',a:v}});}">
+        <div class="q">Given the saturation finding, which way?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="direction" value="Fresh divergent pass on the FUN/CULTURE/DELIGHT lane Slack won't build"><span><span class="ot">① New pass: the fun/culture/delight lane <span class="rec">UNEXPLORED</span></span><span class="od">Run one more divergent round in the one space Slack's enterprise roadmap will never touch — where your taste is the edge.</span></span></label>
+          <label class="opt"><input type="radio" name="direction" value="Develop Nice Catch — the one candidate with a real structural moat"><span><span class="ot">② Push on Nice Catch</span><span class="od">The only idea with a verified moat (all recognition incumbents are manual). Reframe from vitamin → a ritual worth loving, or confirm it's still too thin.</span></span></label>
+          <label class="opt"><input type="radio" name="direction" value="Shift focus to the Reddit Games with a Hook hackathon instead"><span><span class="ot">③ Pivot focus to Reddit <span class="rec">BETTER EV?</span></span><span class="od">Less saturated, creative/community, $40K+$5K. Fire the Reddit META_PROMPT and put your 8 days where taste wins.</span></span></label>
+          <label class="opt"><input type="radio" name="direction" value="Good-track distribution play — give a community a paid-gated capability free"><span><span class="ot">④ Good-track distribution play</span><span class="od">Accept low novelty; win on access + measurable social benefit for a real community. I'd research a sharper, less-fragile target than mutual aid.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this direction</button>
+      </form>
+      <div class="hint">Pick one and press <span style="font-family:var(--mono)">Send to Agent</span>, or just tell me in chat — including "none of these, here's what I'm actually thinking."</div>
+    </div>
+  </section>
+
+  <div class="foot">18/19 agents completed (final synthesis re-curated here by hand after a session-limit interruption) · full detail in the workflow journal · grounding cited from r/Slack, G2, QuestionBase, Slack 2026 AI announcements</div>
+</div>

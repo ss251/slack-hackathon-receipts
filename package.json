@@ -1,0 +1,20 @@
+{
+  "name": "receipts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Receipts — a Slack agent that ends arguments with the actual prior decision (RTS search-as-you → verbatim quote + permalink).",
+  "scripts": {
+    "spike": "bun run scripts/spike.ts",
+    "dev": "bun run src/app.ts"
+  },
+  "dependencies": {
+    "@slack/bolt": "^4.2.0",
+    "@anthropic-ai/sdk": "^0.68.0",
+    "dotenv": "^16.4.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

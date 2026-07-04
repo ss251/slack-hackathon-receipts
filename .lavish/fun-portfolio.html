@@ -1,0 +1,263 @@
+<title>Slack Hackathon — The Fun Lane Portfolio</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;--pink:#e8449b;
+    --radius:15px;--radius-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1120px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.14;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.83em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:34px}
+
+  .hero{background:linear-gradient(120deg,#4A154B,#611f69 45%,#8a2b7a 78%,#e8449b);color:#fff;border-radius:22px;padding:32px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-40px;top:-50px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(236,178,46,.4),transparent 65%)}
+  .hero .eyebrow{color:#f4d6ee}
+  .hero h1{font-size:30px;font-weight:850;color:#fff;margin-top:7px;max-width:20ch}
+  .hero p{color:#f6e7f3;margin:12px 0 0;max-width:70ch;font-size:15px}
+  .contrast{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .cpill{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.24);border-radius:999px;padding:7px 14px;font-size:13px;font-weight:650;color:#fff}
+  .cpill.bad{background:rgba(224,30,90,.22);border-color:rgba(224,30,90,.5)}
+  .cpill.good{background:rgba(46,182,125,.22);border-color:rgba(46,182,125,.55)}
+  .cpill b{color:#ffe08a}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  .insight{border-left:4px solid var(--pink);background:#fdeef7;border-radius:0 12px 12px 0;padding:15px 18px;font-size:14.5px;color:var(--ink-2)}
+  .insight b{color:var(--ink)}
+
+  /* idea cards */
+  .idea{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;margin-bottom:16px}
+  .idea .head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding:18px 20px 14px;border-bottom:1px solid var(--line)}
+  .idea .rank{font-family:var(--mono);font-size:12px;font-weight:800;color:#fff;background:var(--aubergine);border-radius:8px;padding:4px 9px;flex:none}
+  .idea .nm{font-size:19px;font-weight:850;color:var(--aubergine)}
+  .idea .pitch{font-size:14.5px;color:var(--ink-2);margin-top:5px;max-width:70ch}
+  .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+  .tg{font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;letter-spacing:.02em}
+  .tg.tech{background:#e4f6fd;color:#1786a8}.tg.good{background:#e6f7ef;color:#1a7a52}.tg.org{background:#f3eef4;color:var(--aubergine-2)}.tg.either{background:#fff3d6;color:#9a7412}
+  .scoreblock{flex:none;display:grid;gap:5px;min-width:130px}
+  .sc{display:grid;grid-template-columns:58px 1fr 26px;gap:7px;align-items:center;font-size:11px}
+  .sc .lab{color:var(--muted);font-weight:650;text-transform:uppercase;letter-spacing:.03em}
+  .sc .track{height:7px;background:var(--wash-2);border-radius:99px;overflow:hidden}
+  .sc .track i{display:block;height:100%;border-radius:99px}
+  .sc .v{font-family:var(--mono);font-weight:700;color:var(--ink-2);text-align:right}
+  @media(max-width:680px){.idea .head{flex-direction:column}.scoreblock{min-width:0;width:100%}}
+
+  .idea .body{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:680px){.idea .body{grid-template-columns:1fr}}
+  .blk h4{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--aubergine-2);margin:0 0 5px}
+  .blk p{font-size:13.5px;color:var(--ink-2);margin:0}
+  .blk.delight{background:#fdeef7;border-radius:10px;padding:12px 14px}
+  .blk.demo{background:var(--wash);border-radius:10px;padding:12px 14px}
+  .blk.notjust p{font-size:13px}
+  .weak{margin:0 20px 18px;border-left:3px solid var(--yellow);background:#fffaf0;border-radius:0 9px 9px 0;padding:11px 14px}
+  .weak h4{color:#9a7412;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:0 0 4px}
+  .weak p{font-size:12.8px;color:var(--ink-2);margin:0}
+
+  /* how to choose */
+  .choosegrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+  @media(max-width:820px){.choosegrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:480px){.choosegrid{grid-template-columns:1fr}}
+  .cc{border:1px solid var(--line);border-radius:12px;padding:13px;background:var(--paper);text-align:center}
+  .cc .ico{font-size:22px}
+  .cc .opt{font-weight:800;font-size:13.5px;color:var(--aubergine);margin-top:5px}
+  .cc .for{font-size:11.5px;color:var(--muted);margin-top:3px}
+  .cc.hi{border-color:var(--pink);box-shadow:0 6px 18px -10px rgba(232,68,155,.6)}
+
+  .risknote{border-left:4px solid var(--red);background:#fdf0f4;border-radius:0 12px 12px 0;padding:14px 18px;font-size:13.5px;color:var(--ink-2);margin-top:16px}
+  .risknote b{color:var(--ink)}
+
+  /* input */
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px;margin-top:16px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--pink);background:#fdeef7}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rec{font-size:10px;font-weight:800;color:#fff;background:var(--pink);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .qbtn{margin-top:14px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:11px 20px;font-weight:750;font-size:14px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">The fun / culture / delight lane · 24 concepts → 5 standouts</div>
+    <h1>Fun that's made of your team's real life</h1>
+    <p>You steered us to the one lane Slack's enterprise roadmap won't touch. Grounded in what fun Slack/Discord apps teams actually love, five directions came back genuinely differentiated — and actually fun.</p>
+    <div class="contrast">
+      <span class="cpill bad">Utility pass: all 7 <b>WEAK (4.8–5.5)</b></span>
+      <span class="cpill good">Fun pass: five <b>STANDOUT (8.2–8.6)</b></span>
+    </div>
+  </div>
+
+  <section>
+    <div class="insight">💡 <b>The through-line that makes all five work:</b> every fun-bot incumbent (Donut, HeyTaco, Polly, Wordle-in-Slack) posts the <i>identical</i> generic prompt to every workspace — so the delight is interchangeable and fatigues. These are built from <b>THIS community's real week</b>: its actual inside jokes, real people, legendary threads. That's the honest "impossible without the required tech" angle — a static bot's fun is copyable; <b>an agent's fun is un-copyable because it's made of your real shared life.</b> RTS sees it; MCP acts on it (posts, canvases, emoji, games). Discord's <code>Kodama</code> proves the appetite — Slack has <b>no agentic equivalent</b>.</div>
+  </section>
+
+  <!-- IDEAS -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The five directions</h2></div>
+    <p class="sub">Ranked by overall score. Each cleared prior-art + demoability + cringe-risk filters. Honest weakness stated on every one.</p>
+
+    <!-- INSIDER -->
+    <div class="idea">
+      <div class="head">
+        <div><div style="display:flex;gap:10px;align-items:center"><span class="rank">#1 · 8.6</span><span class="nm">Insider</span></div>
+          <div class="pitch">A daily <b>Connections-style</b> grouping puzzle where the 16 tiles and 4 hidden categories are built from your real week — every secret group is an inside joke only your team could crack, solved together in a thread.</div>
+          <div class="tags"><span class="tg tech">RTS + MCP</span><span class="tg good">Agent for Good</span><span class="tg either">daily co-op ritual</span></div>
+        </div>
+        <div class="scoreblock">
+          <div class="sc"><span class="lab">Delight</span><span class="track"><i style="width:85%;background:var(--pink)"></i></span><span class="v">8.5</span></div>
+          <div class="sc"><span class="lab">Diff</span><span class="track"><i style="width:90%;background:var(--green)"></i></span><span class="v">9.0</span></div>
+          <div class="sc"><span class="lab">Demo</span><span class="track"><i style="width:85%;background:var(--blue)"></i></span><span class="v">8.5</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="blk delight"><h4>The delight</h4><p>The team huddling to untangle the grid — "OHHH the four things are all the times we said 'it's probably fine' right before an outage" — the shared groan-laugh of a puzzle <b>no other team on Earth could solve.</b></p></div>
+        <div class="blk demo"><h4>The 3-min demo</h4><p>Agent posts a 4×4 canvas of real week-items; team guesses in-thread; agent reveals the categories with their labels ("Things Blamed on Mercury Retrograde," "Emojis Only Sam Uses") and celebrates the solve streak.</p></div>
+        <div class="blk notjust"><h4>Not just…</h4><p>NOT WordleBot/Ricotta (identical puzzle to every team). NOT manual web Connections-makers (humans hand-type all 16 words). <b>No agentic tool auto-generates a grid from live activity</b> — verified whitespace.</p></div>
+        <div class="blk notjust"><h4>Who loves it</h4><p>Culture-heavy teams tired of generic Wordle; it's co-op, so newcomers absorb lore by playing and quiet members' contributions surface as tiles.</p></div>
+      </div>
+      <div class="weak"><h4>⚠ Honest weakness</h4><p><b>Generation quality is the whole game</b> — Connections' magic is expert misdirection (tiles that plausibly fit two groups, the trap, the aha). Auto-synthesizing that from messy workspace text is genuinely hard; a mediocre grid drops it from "OHHH" to "our bot made a word grid." Degrades on small teams / quiet weeks. Budget the build into grid quality, not plumbing.</p></div>
+    </div>
+
+    <!-- COINED -->
+    <div class="idea">
+      <div class="head">
+        <div><div style="display:flex;gap:10px;align-items:center"><span class="rank">#2 · 8.5</span><span class="nm">Coined</span></div>
+          <div class="pitch">Every community accidentally invents its own language. Coined catches the moment a phrase or perfect typo goes viral, makes it official, and <b>mints it into a real custom emoji</b> your team reacts with forever.</div>
+          <div class="tags"><span class="tg tech">RTS + MCP</span><span class="tg either">Either track</span><span class="tg either">peak demo wow</span></div>
+        </div>
+        <div class="scoreblock">
+          <div class="sc"><span class="lab">Delight</span><span class="track"><i style="width:80%;background:var(--pink)"></i></span><span class="v">8.0</span></div>
+          <div class="sc"><span class="lab">Diff</span><span class="track"><i style="width:90%;background:var(--green)"></i></span><span class="v">9.0</span></div>
+          <div class="sc"><span class="lab">Demo</span><span class="track"><i style="width:90%;background:var(--blue)"></i></span><span class="v">9.0</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="blk delight"><h4>The delight</h4><p>The channel keeps quoting someone's typo "shiptember"; one day Coined declares it's "officially entered the lexicon," mints a fresh <code>:emoji:</code> born from that exact moment, and everyone erupts reacting with <b>the word they made together.</b></p></div>
+        <div class="blk demo"><h4>The 3-min demo</h4><p>Coined surfaces a phrase it detected spreading (RTS shows the real messages), inducts it, <b>mints the emoji live via MCP</b>, and members instantly react with it — a shared word that didn't exist three minutes ago.</p></div>
+        <div class="blk notjust"><h4>Not just…</h4><p>Closest is Discord's Kodama (recap bot, no lasting artifact — no emoji, no lexicon). Slack emoji tools are all manual. <b>The detect→coin→mint-live→grow-a-lexicon loop is unclaimed on Slack.</b> And <code>admin.emoji.add</code> is Enterprise-Grid-only — the free sandbox IS Grid, so it works at $0.</p></div>
+        <div class="blk notjust"><h4>Who loves it</h4><p>Close-knit communities that live on inside jokes — creator/gaming/hobby servers, long-running team channels, anyone who's felt "you had to be there."</p></div>
+      </div>
+      <div class="weak"><h4>⚠ Honest weakness</h4><p><b>Detection precision is the product, and coin-worthy phrases are rare.</b> Fire on a non-joke and the "officially entered the lexicon" reads as management-imposed cringe; wait for true virality and it fires seldom (a rare peak-end magic moment, not a daily ritual). Must be react-to-confirm consent-minting + auto-expiry of un-adopted emoji so misses don't pollute the namespace forever.</p></div>
+    </div>
+
+    <!-- FIELD AWARDS -->
+    <div class="idea">
+      <div class="head">
+        <div><div style="display:flex;gap:10px;align-items:center"><span class="rank">#3 · 8.4</span><span class="nm">The Field Awards</span></div>
+          <div class="pitch">Every Friday, a tiny awards ceremony where the trophies are things that <b>actually happened this week</b> — "Deepest Rabbit Hole," "Best Plot Twist," "Most Heroic Rescue at 6pm" — each deep-linked to the real thread that earned it.</div>
+          <div class="tags"><span class="tg tech">RTS + MCP</span><span class="tg either">Either track</span><span class="tg either">safest / warmest floor</span></div>
+        </div>
+        <div class="scoreblock">
+          <div class="sc"><span class="lab">Delight</span><span class="track"><i style="width:85%;background:var(--pink)"></i></span><span class="v">8.5</span></div>
+          <div class="sc"><span class="lab">Diff</span><span class="track"><i style="width:80%;background:var(--green)"></i></span><span class="v">8.0</span></div>
+          <div class="sc"><span class="lab">Demo</span><span class="track"><i style="width:90%;background:var(--blue)"></i></span><span class="v">9.0</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="blk delight"><h4>The delight</h4><p>"OMG the tabs-vs-spaces thread DID deserve Most Chaotic Debate" — the channel piles on with reactions, and the quiet person who saved the day at 6pm gets <b>seen for the real human texture of the week</b>, not a metric.</p></div>
+        <div class="blk demo"><h4>The 3-min demo</h4><p>Friday 4pm the agent posts a "Field Awards" canvas with four real awards, each linked to the thread that earned it; a teammate reacts 🏆 "no notes." Criteria 1 & 2 on one screen.</p></div>
+        <div class="blk notjust"><h4>Not just…</h4><p>NOT HeyTaco/Bonusly (no points, no leaderboard, nobody has to remember to give anything). Discord award bots store manual awards or count messages — <b>none auto-mint absurd, specific superlatives from the semantic content of real threads.</b></p></div>
+        <div class="blk notjust"><h4>Who loves it</h4><p>Distributed teams, any close-knit channel — especially the teammate who quietly saved the day. Peer celebration, not a manager broadcast. Highest-floor, most inclusive pick.</p></div>
+      </div>
+      <div class="weak"><h4>⚠ Honest weakness</h4><p><b>The awards are LLM judgment calls.</b> Misattribute the hero, or award the loudest thread over the real quiet save (the exact person you promised to see), and it reads as "the bot doesn't get the room." Weekly cadence risks superlatives-fatigue by ~week 6. Mitigable with human co-sign before posting + rotating absurd categories.</p></div>
+    </div>
+
+    <!-- SMALL WORLD -->
+    <div class="idea">
+      <div class="head">
+        <div><div style="display:flex;gap:10px;align-items:center"><span class="rank">#4 · 8.2</span><span class="nm">Small World</span></div>
+          <div class="pitch">It quietly notices that you and someone three channels over share a wonderfully specific secret — competitive Scrabble, home-fermenting hot sauce — and leans in to whisper <b>"wait… you two?"</b></div>
+          <div class="tags"><span class="tg tech">RTS + MCP</span><span class="tg good">Agent for Good</span><span class="tg either">best "Good" story</span></div>
+        </div>
+        <div class="scoreblock">
+          <div class="sc"><span class="lab">Delight</span><span class="track"><i style="width:80%;background:var(--pink)"></i></span><span class="v">8.0</span></div>
+          <div class="sc"><span class="lab">Diff</span><span class="track"><i style="width:80%;background:var(--green)"></i></span><span class="v">8.0</span></div>
+          <div class="sc"><span class="lab">Demo</span><span class="track"><i style="width:90%;background:var(--blue)"></i></span><span class="v">9.0</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="blk delight"><h4>The delight</h4><p>The pure "What! You too? I thought I was the only one" moment — a real friendship born from a hidden overlap <b>neither person knew existed</b>, found in offhand messages weeks and channels apart.</p></div>
+        <div class="blk demo"><h4>The 3-min demo</h4><p>Seeded: Dana mentioned fermenting hot sauce in #random weeks ago; today Leo mentions it in #lunch. The agent posts a "Small World" card quoting both real lines: "there are exactly two of you who do this," with a one-tap warm intro.</p></div>
+        <div class="blk notjust"><h4>Not just…</h4><p>Every incumbent (Donut, MatchCord, Shuffl) matches on <b>self-declared</b> profile data. <b>None mines message history for an undeclared overlap.</b> Cleanest measurable Good story: remote work cut new weak ties ~39%; this repairs exactly that.</p></div>
+        <div class="blk notjust"><h4>Who loves it</h4><p>Remote teams & community members starved of "oh, you too?!" moments who want real friends inside Slack, not just colleagues in adjacent squares.</p></div>
+      </div>
+      <div class="weak"><h4>⚠ Honest weakness</h4><p><b>Consent/surveillance risk is baked into the mechanic.</b> The move that delights — "I read your offhand line from #random and profiled it" — is one false positive from creepy, and could surface a <i>sensitive</i> overlap (health, job-hunting, identity). Needs strict safe-category allowlisting + double-blind opt-in, which softens the public wow. Rare overlaps = occasional magic, not a daily ritual.</p></div>
+    </div>
+
+    <!-- BOOK OF LORE -->
+    <div class="idea">
+      <div class="head">
+        <div><div style="display:flex;gap:10px;align-items:center"><span class="rank">#5 · 8.2</span><span class="nm">The Book of Lore</span></div>
+          <div class="pitch">A living canvas your team co-owns where the agent quietly writes down your inside jokes and legendary threads as they're born — and <b>resurfaces the perfect one at the perfect moment</b> weeks later.</div>
+          <div class="tags"><span class="tg tech">RTS + MCP</span><span class="tg good">Agent for Good</span><span class="tg either">highest delight ceiling</span></div>
+        </div>
+        <div class="scoreblock">
+          <div class="sc"><span class="lab">Delight</span><span class="track"><i style="width:90%;background:var(--pink)"></i></span><span class="v">9.0</span></div>
+          <div class="sc"><span class="lab">Diff</span><span class="track"><i style="width:80%;background:var(--green)"></i></span><span class="v">8.0</span></div>
+          <div class="sc"><span class="lab">Demo</span><span class="track"><i style="width:70%;background:var(--blue)"></i></span><span class="v">7.0</span></div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="blk delight"><h4>The delight</h4><p>Weeks later someone reuses the phrase and the agent drops "📖 canonized in the Book of Lore, Week 12 — the day Sam said it first" — the warm recognition of <b>a private language that's officially, provably theirs.</b></p></div>
+        <div class="blk demo"><h4>The 3-min demo</h4><p>Agent notices a phrase repeated across three threads, posts "🕯️ New lore detected: 'ship it and pray' — add to the Book?"; a teammate hits ✅; the shared Lore canvas updates with the origin thread linked.</p></div>
+        <div class="blk notjust"><h4>Not just…</h4><p>Kodama (Discord) is the near-exact concept and proves the appetite — but <b>Discord-only, no Slack equivalent.</b> Slack prior art is only static slash-command quote bots. NOT a wiki (nobody hand-curates) — the agent mines emergent jokes and tends one growing artifact.</p></div>
+        <div class="blk notjust"><h4>Who loves it</h4><p>Long-lived culture-heavy communities; new hires onboard into the culture by reading the lore instead of guessing at every in-joke.</p></div>
+      </div>
+      <div class="weak"><h4>⚠ Honest weakness</h4><p><b>Lowest demoability of the five.</b> The flagship beat — the perfectly-timed weeks-later callback — is the hardest to land authentically in a scripted <3-min demo (needs seeded time-lapse, risks feeling staged). And a false-positive canonization of a tense/at-someone's-expense thread is tone-deaf. The ✅-gate defuses consent but adds friction that could keep the Book from ever filling.</p></div>
+    </div>
+  </section>
+
+  <!-- HOW TO CHOOSE -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>How to choose — they optimize for different things</h2></div>
+    <p class="sub">All five share one load-bearing risk, so the pick is about which <i>feeling</i> and which trade you want.</p>
+    <div class="choosegrid">
+      <div class="cc hi"><div class="ico">🧩</div><div class="opt">Insider</div><div class="for">peak differentiation — the loved format, un-cloneable</div></div>
+      <div class="cc hi"><div class="ico">🪙</div><div class="opt">Coined</div><div class="for">peak demo wow — a word minted live on screen</div></div>
+      <div class="cc"><div class="ico">🏆</div><div class="opt">Field Awards</div><div class="for">safest, warmest, highest floor — can't misfire badly</div></div>
+      <div class="cc"><div class="ico">🌍</div><div class="opt">Small World</div><div class="for">strongest measurable "Agent for Good" story</div></div>
+      <div class="cc"><div class="ico">📖</div><div class="opt">Book of Lore</div><div class="for">biggest delight ceiling, tightest Kodama-whitespace</div></div>
+    </div>
+    <div class="risknote">⚠️ <b>The one risk they all share:</b> detection/attribution precision <i>is</i> the product, and a mistimed or wrong callout is the forced-fun cliff. So whichever you pick, the 8 days go into <b>generation quality + a consent gate</b>, not plumbing. My honest two-idea gut-check: <b>Coined</b> (peak demo joy) and <b>Insider</b> (peak differentiation).</div>
+  </section>
+
+  <!-- DECISION -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>Your taste decides</h2></div>
+    <div class="decision">
+      <form class="qform" data-lavish-question="pick"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('pick');if(v){window.lavish.queuePrompt('Fun-lane pick — develop this into a full build spec + demo storyboard + AGENT_STATE.md: '+v,{tag:'choice',text:v,data:{q:'pick',a:v}});}">
+        <div class="q">Which do you want me to develop into a full build spec + demo storyboard?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="pick" value="Insider"><span><span class="ot">🧩 Insider <span class="rec">peak differentiation</span></span><span class="od">Daily inside-joke Connections puzzle. Riskiest on generation quality, most un-cloneable.</span></span></label>
+          <label class="opt"><input type="radio" name="pick" value="Coined"><span><span class="ot">🪙 Coined <span class="rec">peak demo wow</span></span><span class="od">Detect a viral phrase → mint a live custom emoji. Best single 3-min moment.</span></span></label>
+          <label class="opt"><input type="radio" name="pick" value="The Field Awards"><span><span class="ot">🏆 The Field Awards</span><span class="od">Friday superlatives from the real week. Warmest, safest, highest floor.</span></span></label>
+          <label class="opt"><input type="radio" name="pick" value="Small World"><span><span class="ot">🌍 Small World</span><span class="od">Surface a hidden shared interest between two people. Best "Good" story.</span></span></label>
+          <label class="opt"><input type="radio" name="pick" value="The Book of Lore"><span><span class="ot">📖 The Book of Lore</span><span class="od">Living inside-joke canon + timed callbacks. Highest delight ceiling.</span></span></label>
+          <label class="opt"><input type="radio" name="pick" value="spec out BOTH Coined and Insider so I can compare before committing"><span><span class="ot">⚖️ Spec Coined + Insider both</span><span class="od">Build both storyboards side-by-side, then I choose. (The gut-check shortlist.)</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Develop this one</button>
+      </form>
+      <div class="hint">Pick one and press <span style="font-family:var(--mono)">Send to Agent</span>, or tell me in chat — including "none of these grab me" or "combine X and Y."</div>
+    </div>
+  </section>
+
+  <div class="foot">24 concepts → 5 standouts (8.2–8.6) · 32 agents · grounded vs Donut/HeyTaco/Polly/Kodama/Wordle-in-Slack · full detail in the workflow journal</div>
+</div>

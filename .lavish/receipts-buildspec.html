@@ -1,0 +1,247 @@
+<title>Receipts — Build Spec & Demo Storyboard</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;--pink:#e8449b;
+    --radius:15px;--radius-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.14;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.83em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:34px}
+
+  .hero{background:linear-gradient(120deg,#1a7a52,#2eb67d 60%,#36c5f0);color:#fff;border-radius:20px;padding:30px}
+  .hero .eyebrow{color:#d6f5e7}
+  .hero h1{font-size:30px;font-weight:850;color:#fff;margin-top:6px}
+  .hero p{color:#eafaf3;margin:11px 0 0;max-width:70ch;font-size:15px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:650;color:#fff}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* architecture flow */
+  .flow{display:grid;gap:0}
+  .fstep{display:grid;grid-template-columns:34px 1fr;gap:14px;align-items:start;position:relative;padding:9px 0}
+  .fstep .idx{width:34px;height:34px;border-radius:9px;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:800;font-size:14px;z-index:1}
+  .fstep:not(:last-child):before{content:"";position:absolute;left:16px;top:38px;bottom:-4px;width:2px;background:var(--line)}
+  .fstep .t{font-weight:700;font-size:14.5px}
+  .fstep .d{font-size:13px;color:var(--ink-2);margin-top:2px}
+  .tech{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;margin:5px 5px 0 0}
+  .tech.rts{background:#eafaf3;color:#1a7a52}.tech.llm{background:#fef4de;color:#9a7412}.tech.bolt{background:#f3eef4;color:var(--aubergine-2)}.tech.mcp{background:#e4f6fd;color:#1786a8}
+  .fstep.acl .idx{background:var(--blue)}
+  .fstep.acl .t{color:#1786a8}
+
+  /* two beats */
+  .beats2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.beats2{grid-template-columns:1fr}}
+  .b2{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .b2 .h{padding:11px 15px;font-weight:800;font-size:13.5px;color:#fff}
+  .b2.hero .h{background:linear-gradient(120deg,#611f69,#e8449b)}
+  .b2.stick .h{background:linear-gradient(120deg,#1a7a52,#2eb67d)}
+  .b2 .body{padding:13px 15px;font-size:13px;color:var(--ink-2)}
+  .b2 .body b{color:var(--ink)}
+
+  /* slack card mock */
+  .slackcard{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:10px;font-size:13px;box-shadow:0 3px 12px -6px rgba(0,0,0,.15)}
+  .slackcard .bot{display:flex;align-items:center;gap:8px;font-weight:750;color:var(--ink)}
+  .slackcard .bot .av{width:20px;height:20px;border-radius:5px;background:var(--green);display:grid;place-items:center;font-size:12px}
+  .slackcard .bot .app{font-size:10px;font-weight:700;background:var(--wash-2);color:var(--muted);border-radius:4px;padding:1px 5px}
+  .slackcard .quote{border-left:3px solid var(--muted);padding:6px 12px;margin:9px 0;color:var(--ink-2);font-style:italic;background:var(--wash)}
+  .slackcard .meta{font-size:12px;color:var(--muted)}
+  .slackcard .jump{display:inline-block;margin-top:9px;background:var(--green);color:#fff;font-weight:700;font-size:12px;border-radius:7px;padding:6px 12px}
+  .slackcard .unchanged{margin-top:8px;font-size:12px;color:#1a7a52;font-weight:600}
+
+  /* storyboard */
+  .board{display:grid;gap:10px}
+  .beat{display:grid;grid-template-columns:52px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 15px}
+  .beat .tc{font-family:var(--mono);font-size:12px;font-weight:800;color:var(--aubergine-2)}
+  .beat .bt{font-weight:750;font-size:14px}
+  .beat .bd{font-size:13px;color:var(--ink-2);margin-top:3px}
+  .beat.hero{border-color:var(--pink);background:#fdeef7}
+  .beat.hero .tc{color:var(--pink)}
+  .beat.acl{border-color:var(--blue);background:#eef9fe}
+  .beat.acl .tc{color:#1786a8}
+
+  /* spike gate */
+  .gate{border:2px solid var(--green);border-radius:16px;overflow:hidden;margin-top:6px}
+  .gate .gh{background:#f2fbf7;padding:14px 18px;border-bottom:1px solid #d6efe3;font-weight:800;color:#1a7a52;font-size:15px}
+  .gate .gb{padding:16px 18px}
+  .must{list-style:none;padding:0;margin:0;display:grid;gap:11px}
+  .must li{display:flex;gap:11px;font-size:13.5px;color:var(--ink-2);align-items:flex-start}
+  .must .c{flex:none;width:24px;height:24px;border-radius:7px;background:#e6f7ef;color:#1a7a52;display:grid;place-items:center;font-weight:800;font-size:12px}
+  .must b{color:var(--ink)}
+  .must .risk{font-size:11px;font-weight:800;color:var(--red);background:#fde7ee;border-radius:5px;padding:1px 6px;margin-left:4px}
+  .fb{margin-top:14px;border-left:4px solid var(--yellow);background:#fffaf0;border-radius:0 10px 10px 0;padding:11px 14px;font-size:12.8px;color:var(--ink-2)}
+  .fb b{color:var(--ink)}
+
+  /* scope columns */
+  .scope{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.scope{grid-template-columns:1fr}}
+  .scol{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--paper)}
+  .scol h4{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:0 0 9px}
+  .scol.mvp h4{color:#1a7a52}.scol.cut h4{color:#9a7412}
+  .scol ol,.scol ul{margin:0;padding-left:18px;font-size:13px;color:var(--ink-2)}
+  .scol li{margin:5px 0}
+  .never{margin-top:12px;border-left:4px solid var(--red);background:#fdf0f4;border-radius:0 10px 10px 0;padding:11px 14px;font-size:13px;color:var(--ink-2)}
+  .never b{color:var(--red)}
+
+  .timeline{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .tl{flex:1 1 130px;border:1px solid var(--line);border-radius:10px;padding:11px 13px;background:var(--paper)}
+  .tl .d{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--aubergine-2)}
+  .tl .w{font-weight:700;font-size:13px;margin-top:2px}
+  .tl .x{font-size:11.5px;color:var(--muted);margin-top:2px}
+  .tl.crit{border-color:var(--red)}
+
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:22px;margin-top:16px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--green);background:#f2fbf7}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}.opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .gobtn{display:block;width:100%;margin-top:14px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .foot{margin-top:32px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Locked · build spec · one engine, two beats</div>
+    <h1>🧾 Receipts</h1>
+    <p>Summon it mid-conversation and it ends the argument with the actual prior decision — verbatim quote, author, date, live permalink — searched only from what <i>you</i> can see. And it quietly deflects repeat questions into a growing FAQ.</p>
+    <div class="chips">
+      <span class="chip">Track: Agent for Good</span>
+      <span class="chip">Engine: RTS (load-bearing)</span>
+      <span class="chip">Venue: community Slacks</span>
+      <span class="chip">Deadline: Jul 13, 5pm PT</span>
+    </div>
+  </div>
+
+  <!-- TWO BEATS -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>One engine, two summon moments</h2></div>
+    <div class="beats2">
+      <div class="b2 hero">
+        <div class="h">🥊 Hero beat — the Receipt</div>
+        <div class="body">A thread re-litigates something settled. Someone summons: <code>@Receipts did we decide to drop Node 18?</code> → it returns the decision with receipts. <b>"The bot just ended him with a link from March."</b> Spicy, screenshot-worthy.</div>
+      </div>
+      <div class="b2 stick">
+        <div class="h">🔁 Sticky beat — the Deflect</div>
+        <div class="body">A newcomer asks a question that's been answered before. Receipts: <b>"asked & answered 3× — best by @sam [jump]"</b> and after the 3rd, drafts the FAQ canvas entry. The "still using it next week" habit.</div>
+      </div>
+    </div>
+    <div class="slackcard">
+      <div class="bot"><span class="av">🧾</span> Receipts <span class="app">APP</span></div>
+      <div style="margin-top:6px">Yes — decided by <b>@dana</b> in <b>#maintainers</b> on <b>Mar 12</b>:</div>
+      <div class="quote">"we're dropping Node 18 support in v3, EOL'd upstream — anyone still on it should pin v2."</div>
+      <div class="meta">asked &amp; answered 2× before · searched as you (permission-aware)</div>
+      <span class="jump">↪ Jump to message</span>
+      <div class="unchanged">✓ What's changed since: nothing.</div>
+    </div>
+  </section>
+
+  <!-- ARCHITECTURE -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>Architecture — small on purpose</h2></div>
+    <p class="sub">Bolt app, one RTS search, one Claude call, one post. No datastore (the FAQ canvas is the only persistent artifact). Every arrow is a real API.</p>
+    <div style="background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px">
+      <div class="flow">
+        <div class="fstep"><div class="idx">1</div><div><div class="t">Summon</div><div class="d"><code>@Receipts &lt;q&gt;</code> (app_mention — the reliable <code>action_token</code> carrier) or a "Pull receipts" message shortcut.</div><span class="tech bolt">Bolt · app_mention</span></div></div>
+        <div class="fstep"><div class="idx">2</div><div><div class="t">Read intent + keyword</div><div class="d">Claude (temp 0) extracts the question and the rare distinctive topic token.</div><span class="tech llm">Claude</span></div></div>
+        <div class="fstep"><div class="idx">3</div><div><div class="t">Search history AS the summoner</div><div class="d"><code>assistant.search.context</code>, keyword mode, incl. private channels — returns prior messages with author, ts, <b>permalink</b>. Permission-scoped to the summoner.</div><span class="tech rts">RTS · the engine</span></div></div>
+        <div class="fstep"><div class="idx">4</div><div><div class="t">Rank + repeat-detect</div><div class="d">Claude picks the best prior decision/answer; N hits = "asked N×"; "what's changed: nothing" if nothing later contradicts it.</div><span class="tech llm">Claude · temp 0</span></div></div>
+        <div class="fstep"><div class="idx">5</div><div><div class="t">Post the receipt</div><div class="d">Block Kit card: verbatim quote + @author + date + <b>Jump button</b>. Whisper-first option to save the asker's face.</div><span class="tech mcp">chat.postMessage</span></div></div>
+        <div class="fstep"><div class="idx">6</div><div><div class="t">Deflect → FAQ canvas</div><div class="d">On a repeat, offer "add to FAQ"; maintainer approves → append to the canvas that grows as a side effect.</div><span class="tech mcp">canvases</span></div></div>
+        <div class="fstep acl"><div class="idx">✦</div><div><div class="t">The ACL boundary (zero code)</div><div class="d">A decision in a channel the summoner isn't in never returns from step 3 — so it's never leaked. Falls out of searching <i>as the user</i>. The unfakeable "only-possible-with-RTS" artifact.</div><span class="tech rts">emergent from RTS</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORYBOARD -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>The 3-min demo</h2></div>
+    <p class="sub">Seeded sandbox = an OSS/hackathon community "DevBuilders." You record in #help.</p>
+    <div class="board">
+      <div class="beat"><div class="tc">0:00</div><div><div class="bt">Cold open on a live argument</div><div class="bd">Two people in #help re-litigating: "wait, did we actually decide to drop Node 18, or was that just floated?" Back-and-forth, no resolution.</div></div></div>
+      <div class="beat hero"><div class="tc">0:15</div><div><div class="bt">🥊 The receipt lands</div><div class="bd">Someone types <code>@Receipts did we decide to drop Node 18?</code> → ~3s → the card: @dana's real decision in #maintainers, Mar 12, verbatim quote + <b>[Jump]</b> + "what's changed: nothing." Click Jump → the actual message. Argument over.</div></div></div>
+      <div class="beat acl"><div class="tc">0:45</div><div><div class="bt">✦ The permission kicker</div><div class="bd">Narrate: there's a <i>related</i> call in a private #security channel the summoner isn't in — Receipts searched as them, so it stayed hidden. Cut to an owner account proving it exists. It saw only what you can see.</div></div></div>
+      <div class="beat"><div class="tc">1:20</div><div><div class="bt">🔁 The sticky beat</div><div class="bd">A newcomer asks "how do I get RTS working in the sandbox?" — 3rd time this month. Receipts: "asked & answered 3× — best by @sam [jump]. This keeps coming up — added to the FAQ 📖." The canvas grows.</div></div></div>
+      <div class="beat"><div class="tc">2:10</div><div><div class="bt">Close on the two truths</div><div class="bd">The receipt = the screenshot people post. The FAQ deflect = the reason maintainers keep it installed. Impact line: deflection %, maintainer hours saved, time-to-answer. Architecture card.</div></div></div>
+    </div>
+  </section>
+
+  <!-- SPIKE -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>Do FIRST — the 48h cake spike (go/no-go)</h2></div>
+    <div class="gate">
+      <div class="gh">✅ Must be TRUE on seeded sandbox data before any polish</div>
+      <div class="gb">
+        <ul class="must">
+          <li><span class="c">1</span><span><b>Identity — search AS the summoner.</b> Prove <code>app_mention</code> delivers a usable <code>action_token</code> for RTS bot-token search. <span class="risk">#1 RISK</span> If not → one-time user-token OAuth, or degrade to public-channel bot-scope search.</span></li>
+          <li><span class="c">2</span><span><b>Retrieval.</b> A keyword search reliably returns the seeded prior decision from <b>conversation history</b> with a resolvable permalink.</span></li>
+          <li><span class="c">3</span><span><b>ACL boundary.</b> A decision in a channel the summoner is NOT in is correctly <b>not</b> surfaced — the unfakeable artifact. <b>GO/NO-GO here.</b></span></li>
+        </ul>
+        <div class="fb"><b>Fallback if it wobbles:</b> if search-as-summoner is hard, ship <b>public-channel bot-scope</b> search — loses the ACL kicker but still works for community channels (most of the value). If retrieval is noisy on messy archives, show <b>top-3 candidate links</b>, never a synthesized answer without receipts.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SCOPE + TIMELINE -->
+  <section>
+    <div class="sh"><span class="num">05</span><h2>Scope &amp; the 8 days</h2></div>
+    <div class="scope">
+      <div class="scol mvp"><h4>✓ MVP (build order)</h4><ol>
+        <li>Sandbox + app (Agents on, RTS scopes, App ID)</li>
+        <li>Summon: app_mention (+ shortcut)</li>
+        <li>RTS search-as-summoner (keyword, permalink)</li>
+        <li>Claude rank + repeat-detect</li>
+        <li>Receipt card + Jump + whisper option</li>
+        <li>FAQ-deflect → canvas (maintainer-approve)</li>
+        <li>Seed community + private-channel decision</li>
+      </ol></div>
+      <div class="scol cut"><h4>↓ Descope first if tight</h4><ul>
+        <li>Message-shortcut trigger → @mention only</li>
+        <li>FAQ canvas → receipt-only</li>
+        <li>ACL kicker → public-channel only</li>
+        <li>Whisper-first → always in-thread</li>
+      </ul>
+      <div class="never"><b>Never cut:</b> the verbatim quote + the live permalink. Receipts, not summaries — that's the entire product.</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="tl crit"><div class="d">Jul 6</div><div class="w">Spike</div><div class="x">go/no-go gate</div></div>
+      <div class="tl"><div class="d">Jul 7–10</div><div class="w">Build loop</div><div class="x">summon→search→card→FAQ</div></div>
+      <div class="tl"><div class="d">Jul 11</div><div class="w">Seed + polish</div><div class="x">card UX, canvas, ACL demo</div></div>
+      <div class="tl"><div class="d">Jul 12</div><div class="w">Record + submit</div><div class="x">video, diagram, test access</div></div>
+      <div class="tl crit"><div class="d">Jul 13</div><div class="w">Buffer</div><div class="x">5pm PT hard</div></div>
+    </div>
+  </section>
+
+  <!-- GO -->
+  <section>
+    <div class="sh"><span class="num">06</span><h2>Green-light the build?</h2></div>
+    <div class="decision">
+      <div class="q">Spec + AGENT_STATE.md are written. Ready to start executing?</div>
+      <div class="opts">
+        <form data-lavish-question="go" style="display:contents"
+          onsubmit="event.preventDefault();"></form>
+      </div>
+      <span data-lavish-action="start" role="button" tabindex="0">
+        <button class="gobtn" type="button" onclick="window.lavish.queuePrompt('GO: start executing the Receipts build. Kick off Phase 0 (human-unblock checklist) and scaffold the Phase-1 cake spike (RTS search-as-summoner + retrieval + ACL boundary) as the go/no-go gate. Follow AGENT_STATE.md.',{tag:'go',text:'🚀 Start the Receipts build'});">🚀 Start the build — Phase 0 + cake spike</button>
+      </span>
+      <div class="hint">Or tell me in chat: tweak the storyboard, change the seeded scenario, adjust scope, or "spec looks right, but I'll do the sandbox setup myself first." Working spine: <code>AGENT_STATE.md</code></div>
+    </div>
+  </section>
+
+  <div class="foot">Spec + loop-spine written to <code>AGENT_STATE.md</code> · one engine (RTS search-as-you → cite w/ permalink) · hero beat = receipt, sticky beat = FAQ deflect · Agent for Good, community venue</div>
+</div>

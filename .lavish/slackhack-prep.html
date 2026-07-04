@@ -1,0 +1,398 @@
+<title>Slack Agent Builder Challenge — Prep Playbook</title>
+<style>
+  :root{
+    --aubergine:#4A154B; --aubergine-2:#611f69; --ink:#1d1c1d; --ink-2:#454245;
+    --muted:#616061; --line:#e8e3e8; --paper:#ffffff; --wash:#f8f4f9; --wash-2:#f3eef4;
+    --green:#2eb67d; --blue:#36c5f0; --red:#e01e5a; --yellow:#ecb22e;
+    --good:#2eb67d; --org:#36c5f0;
+    --radius:14px; --radius-sm:9px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 96px}
+  a{color:var(--aubergine-2)}
+  h1,h2,h3{line-height:1.15;letter-spacing:-.02em;margin:0}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--aubergine-2);opacity:.85}
+  section{margin-top:40px}
+  .lead{color:var(--ink-2);font-size:16.5px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--wash-2);
+    padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:20px 22px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  /* hero */
+  .hero{background:linear-gradient(135deg,var(--aubergine) 0%,var(--aubergine-2) 60%,#7c2d84 100%);
+    color:#fff;border-radius:20px;padding:34px 32px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-60px;top:-60px;width:240px;height:240px;
+    border-radius:50%;background:radial-gradient(circle,rgba(236,178,46,.35),transparent 65%)}
+  .hero h1{font-size:33px;font-weight:850;color:#fff}
+  .hero p{color:#f1e6f2;margin:.5rem 0 0;max-width:64ch}
+  .dots{display:flex;gap:7px;margin-bottom:18px}
+  .dots i{width:12px;height:12px;border-radius:50%;display:block}
+  .clockrow{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+  .chip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);
+    border-radius:999px;padding:7px 14px;font-size:13px;font-weight:600;color:#fff;
+    backdrop-filter:blur(4px)}
+  .chip b{color:var(--yellow)}
+  .countdown{display:inline-flex;align-items:baseline;gap:8px;background:var(--yellow);
+    color:var(--aubergine);font-weight:850;border-radius:999px;padding:7px 16px;font-size:14px}
+  .countdown .n{font-size:19px}
+
+  /* section head */
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:23px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;
+    background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+
+  /* machine flow */
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+  .step{flex:1 1 130px;background:var(--paper);border:1px solid var(--line);
+    border-radius:var(--radius-sm);padding:12px 13px;position:relative}
+  .step .k{font-family:var(--mono);font-size:11px;color:var(--aubergine-2);font-weight:700}
+  .step .t{font-weight:750;font-size:13.5px;margin-top:3px}
+  .step .d{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.4}
+  .step.build{border-color:var(--green);background:#f2fbf7}
+  .step.decide{border-color:var(--yellow);background:#fffaf0}
+  .arrow{align-self:center;color:var(--aubergine-2);font-weight:800;opacity:.5;flex:none}
+  @media(max-width:760px){.arrow{display:none}.step{flex-basis:100%}}
+
+  /* principle list */
+  .plist{list-style:none;padding:0;margin:0;display:grid;gap:11px}
+  .plist li{display:flex;gap:12px;align-items:flex-start}
+  .plist .b{flex:none;width:26px;height:26px;border-radius:8px;background:var(--wash-2);
+    color:var(--aubergine-2);display:grid;place-items:center;font-size:14px;font-weight:800}
+  .plist b{color:var(--ink)}
+  .plist span{font-size:14.5px;color:var(--ink-2)}
+
+  /* tables */
+  .tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl th,.tbl td{text-align:left;padding:11px 13px;border-bottom:1px solid var(--line);
+    vertical-align:top}
+  .tbl th{background:var(--wash-2);font-weight:750;color:var(--aubergine);
+    font-size:12px;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl td b{color:var(--ink)}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;
+    letter-spacing:.02em}
+  .pill.g{background:#e6f7ef;color:#1a7a52} .pill.b{background:#e4f6fd;color:#1786a8}
+  .pill.y{background:#fef4de;color:#9a7412} .pill.r{background:#fde7ee;color:#b01444}
+
+  /* pillar cards */
+  .pillar{border-top:4px solid var(--line)}
+  .pillar.rec{border-top-color:var(--green);box-shadow:0 6px 22px -12px rgba(46,182,125,.55)}
+  .pillar h3{font-size:16px;font-weight:800;color:var(--aubergine)}
+  .pillar .tag{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}
+  .pillar ul{margin:10px 0 0;padding-left:16px;font-size:13px;color:var(--ink-2)}
+  .pillar li{margin:4px 0}
+
+  /* translate rows */
+  .tr2{display:grid;grid-template-columns:1fr 24px 1fr;gap:10px;align-items:center;
+    padding:13px 0;border-bottom:1px dashed var(--line)}
+  .tr2:last-child{border-bottom:none}
+  .tr2 .from{font-size:13.5px;color:var(--muted)}
+  .tr2 .to{font-size:13.5px;color:var(--ink);font-weight:600}
+  .tr2 .mid{color:var(--green);font-weight:800;text-align:center}
+  @media(max-width:640px){.tr2{grid-template-columns:1fr;gap:3px}.tr2 .mid{display:none;text-align:left}}
+
+  /* timeline */
+  .tl{position:relative;padding-left:26px}
+  .tl:before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(var(--aubergine),var(--green))}
+  .day{position:relative;margin-bottom:14px}
+  .day:before{content:"";position:absolute;left:-22px;top:5px;width:11px;height:11px;
+    border-radius:50%;background:var(--aubergine);border:2px solid #fff;
+    box-shadow:0 0 0 2px var(--aubergine)}
+  .day.crit:before{background:var(--red);box-shadow:0 0 0 2px var(--red)}
+  .day.now:before{background:var(--yellow);box-shadow:0 0 0 2px var(--yellow)}
+  .day .dh{display:flex;gap:9px;align-items:baseline;flex-wrap:wrap}
+  .day .dd{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--aubergine-2)}
+  .day .dn{font-weight:750;font-size:14.5px}
+  .day .db{font-size:13.5px;color:var(--ink-2);margin-top:2px}
+  .tag-now{background:var(--yellow);color:var(--aubergine);font-size:10px;font-weight:800;
+    padding:1px 7px;border-radius:999px;letter-spacing:.04em}
+  .tag-ship{background:var(--red);color:#fff;font-size:10px;font-weight:800;
+    padding:1px 7px;border-radius:999px;letter-spacing:.04em}
+
+  /* checklist */
+  .chk{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+  .chk li{display:flex;gap:10px;font-size:14px;color:var(--ink-2);align-items:flex-start}
+  .chk li:before{content:"☐";color:var(--aubergine-2);font-weight:800;flex:none}
+
+  /* input / decision */
+  .decision{background:linear-gradient(180deg,#fff, var(--wash));border:2px solid var(--aubergine);
+    border-radius:18px;padding:26px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:16px 18px;margin-top:14px}
+  .qform .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:10px}
+  .opts{display:grid;gap:8px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);
+    border-radius:var(--radius-sm);padding:11px 13px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--aubergine-2);background:var(--wash)}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:650;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .qbtn{margin-top:12px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;
+    padding:10px 18px;font-weight:750;font-size:14px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .gobtn{display:block;width:100%;margin-top:18px;background:var(--green);color:#fff;border:none;
+    border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;
+    font-family:inherit;letter-spacing:.01em;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:8px;text-align:center}
+
+  .callout{border-left:4px solid var(--green);background:#f2fbf7;border-radius:0 10px 10px 0;
+    padding:13px 16px;font-size:13.5px;color:var(--ink-2)}
+  .callout.warn{border-left-color:var(--red);background:#fdf0f4}
+  .callout b{color:var(--ink)}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:12.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px 16px}
+  .kbd{font-family:var(--mono);font-size:12px}
+</style>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="dots"><i style="background:#36c5f0"></i><i style="background:#2eb67d"></i><i style="background:#ecb22e"></i><i style="background:#e01e5a"></i></div>
+    <div class="eyebrow" style="color:#f0d9f2">Prep playbook · distilled from the Rally win</div>
+    <h1>Slack Agent Builder Challenge</h1>
+    <p>The reusable machine that produced a hackathon winner (Rally), retargeted at Slack — plus a concrete 8-day build plan. Ideation-lock has to happen in ~48h, not after a week of debate.</p>
+    <div class="clockrow">
+      <span class="countdown">⏳ <span class="n">8 days</span> to submit</span>
+      <span class="chip">Submit by <b>Jul 13, 5:00pm PT</b></span>
+      <span class="chip">Judging <b>Jul 14 – Aug 6</b></span>
+      <span class="chip">Winners <b>~Aug 11</b></span>
+      <span class="chip">Prize pool <b>$74,400</b> · 9 winners</span>
+    </div>
+  </div>
+
+  <p class="lead" style="margin-top:26px">Two agents mined the full Rally arc — the <b>ideation pipeline</b> (research brief → dossier → adversarial war rooms → convergence) and the <b>build orchestration</b> (<code>AGENT_STATE.md</code> loop, model tiering, scope discipline). Below: the durable machine, the decoded Slack target, how they map, the compressed plan, and the two decisions I need from you to fire the ideation room.</p>
+
+  <!-- SECTION 1 — THE MACHINE -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The machine that won Rally</h2></div>
+    <p class="sub">The reusable IP isn't the app — it's this pipeline. It didn't pick the first idea; the dossier recommended "SafeSwitch," a war room ratified it, then a fresh ideation room <b>dethroned it</b> and surfaced Rally.</p>
+
+    <div class="flow">
+      <div class="step"><div class="k">phase 1</div><div class="t">Research Brief</div><div class="d">Fixed skeleton: role, verified facts, objective function, workstreams</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">phase 2–3</div><div class="t">Dossier + Verify</div><div class="d">Deep-research 6–8 concepts; fact-check every load-bearing claim</div></div>
+      <div class="arrow">→</div>
+      <div class="step"><div class="k">phase 4–6</div><div class="t">War Rooms ×3</div><div class="d">5 adversarial personas → cruxes → fact-check duels → weighted votes</div></div>
+      <div class="arrow">→</div>
+      <div class="step decide"><div class="k">phase 7</div><div class="t">Kickoff board</div><div class="d">Lavish decision surface = the human "GO" signal</div></div>
+      <div class="arrow">→</div>
+      <div class="step build"><div class="k">phase 8</div><div class="t">Loop build</div><div class="d"><code>AGENT_STATE.md</code> spine, agent fan-out, demo daily</div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card">
+        <div class="eyebrow">Ideation half — the durable rules</div>
+        <ul class="plist" style="margin-top:12px">
+          <li><span class="b">λ</span><span><b>One objective function:</b> rank by builder EV = prize EV × rubric fit × buildability × differentiation × upside.</span></li>
+          <li><span class="b">⚔</span><span><b>War-room machine:</b> 5 fixed personas (Judge Whisperer, Narrative Scout, SDK Skeptic, Contrarian Operator, The Clock) → named cruxes → <code>[CONFIRMED]/[REFUTED]</code> fact-check duels → votes.</span></li>
+          <li><span class="b">◎</span><span><b>Required tech must be load-bearing,</b> not decoration. Rivals died on verified facts, not vibes.</span></li>
+          <li><span class="b">✦</span><span><b>The "wow" lives on the dominant rubric axis</b> — the winning mechanic maxed UX-40 & innovation-30 on the <i>same screen</i>.</span></li>
+          <li><span class="b">▚</span><span><b>MECE idea frames</b> so ideas don't collide; only build in verified-thin gaps.</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Build half — the discipline</div>
+        <ul class="plist" style="margin-top:12px">
+          <li><span class="b">◆</span><span><b>48h spike gate ("the cake"):</b> prove the single scariest, most-magical call end-to-end before committing. GO/NO-GO.</span></li>
+          <li><span class="b">⟲</span><span><b><code>AGENT_STATE.md</code> loop spine:</b> read-file → do first unchecked item → log → repeat. Survives context compaction.</span></li>
+          <li><span class="b">▲</span><span><b>Scope: primitive survives, shell is disposable.</b> Pre-plan degrade paths; cut ruthlessly.</span></li>
+          <li><span class="b">✕</span><span><b>Seed a deliberately-broken state</b> so the failure/edge story is a permanent receipt, not a claim.</span></li>
+          <li><span class="b">▶</span><span><b>Prove it live, then write the README from receipts.</b> Submission materials come LAST, after the product is at its best.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2 — THE TARGET -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The Slack target, decoded</h2></div>
+    <p class="sub">Build a Slack <b>agent</b> that solves a real, specific workflow <i>inside</i> Slack. The rules explicitly call out the losing pattern: <b>"a generic chatbot wrapped in a Slack UI."</b> Avoid that lane.</p>
+
+    <div class="eyebrow" style="margin:6px 0 10px">Use ≥1 required tech "in a way that wouldn't be possible without it"</div>
+    <div class="grid g3">
+      <div class="card pillar rec">
+        <div class="tag" style="color:var(--green)">◆ Recommended · hacker path</div>
+        <h3>MCP + RTS API</h3>
+        <ul>
+          <li><b>RTS</b> = permission-aware live search of the real workspace's threads/files</li>
+          <li><b>MCP</b> = Slack actions as tools an LLM invokes; OAuth auto-handled</li>
+          <li>Together: <b>search → reason → act</b> in Slack's native permission model</li>
+          <li>Bolt app; user token, scope <code>search:read.public</code>+</li>
+        </ul>
+      </div>
+      <div class="card pillar">
+        <div class="tag" style="color:var(--org)">low-code path</div>
+        <h3>Agent Builder / Agentforce</h3>
+        <ul>
+          <li>Custom Slack actions via Apex <code>@InvocableMethod</code></li>
+          <li>Needs a Salesforce org + Named Credentials</li>
+          <li>Fastest for CRM-adjacent / enterprise flows</li>
+          <li>Heavier setup; less "look what only Slack can do"</li>
+        </ul>
+      </div>
+      <div class="card pillar">
+        <div class="tag" style="color:var(--muted)">the two tracks</div>
+        <h3>Good vs Orgs</h3>
+        <ul>
+          <li><b style="color:var(--good)">Agent for Good</b> — judged on <b>measurable social benefit</b></li>
+          <li><b style="color:var(--org)">Agent for Organizations</b> — judged on <b>real adoption potential</b></li>
+          <li>Chosen at submission — bias toward the thinner credible field</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid g2" style="margin-top:16px">
+      <div class="card">
+        <div class="eyebrow">Judging bar — 3 criteria</div>
+        <ol style="margin:10px 0 0;padding-left:18px;font-size:14px;color:var(--ink-2)">
+          <li>Solves a <b>real, specific Slack workflow</b> (not a chatbot skin)</li>
+          <li>Required tech used in a way <b>not otherwise possible</b></li>
+          <li><b>Clear impact</b> — social benefit (Good) / adoption (Orgs)</li>
+        </ol>
+        <div class="callout" style="margin-top:12px">Judges spend <b>~5–7 min/project</b>; demo video hard-capped at <b>&lt; 3 min</b> — design criteria 1 & 2 to land on the <i>same screen</i>.</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Submission checklist</div>
+        <ul class="chk" style="margin-top:10px">
+          <li>Demo video &lt; 3 min (YouTube/Vimeo), showing it actually working</li>
+          <li><b>Architecture diagram</b></li>
+          <li>Slack <b>developer sandbox URL</b></li>
+          <li>Test access to <code>slackhack@salesforce.com</code> + <code>testing@devpost.com</code></li>
+          <li>No unlicensed trademarks / copyrighted material</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:16px"><b>De-risked (SDK-Skeptic check passed):</b> the free <b>Slack Developer Program sandbox is a full Enterprise Grid org</b> ($0; 2 sandboxes × 3 workspaces × 8 users; 6-mo life) — it unlocks the otherwise paid-gated <b>RTS API, MCP, and Agent Builder</b>. A solo dev can build the whole agentic path for free. This is Rally's "free testnet," and it greenlights the MCP+RTS hacker path.</div>
+  </section>
+
+  <!-- SECTION 3 — TRANSLATION -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>Rally lesson → Slack move</h2></div>
+    <p class="sub">What carries over verbatim, retargeted from a crypto rubric to Slack's.</p>
+    <div class="card">
+      <div class="tr2"><div class="from">Cross-chain move visible on the UX screen (maxed UX-40 + innovation-30 together)</div><div class="mid">→</div><div class="to">Agent acts on <b>live, permission-scoped workspace context via RTS</b> — something a generic chatbot literally cannot do. Criteria 1 & 2 on one screen.</div></div>
+      <div class="tr2"><div class="from">Sponsor tech load-bearing, not decoration</div><div class="mid">→</div><div class="to">The required pillar (RTS/MCP) must be the <b>reason the agent works</b>, not a checkbox.</div></div>
+      <div class="tr2"><div class="from">Prove "the cake" in a 48h spike before building</div><div class="mid">→</div><div class="to">Spike: agent pulls a real thread's context via RTS and <b>acts through MCP</b> in the sandbox. GO/NO-GO.</div></div>
+      <div class="tr2"><div class="from">Seed a deliberately-broken state = permanent receipt</div><div class="mid">→</div><div class="to">Demo the agent <b>respecting a permission boundary / handling an edge case</b> gracefully — trust punchline.</div></div>
+      <div class="tr2"><div class="from">Prove live, then write README from receipts; submission last</div><div class="mid">→</div><div class="to">Same. Record the &lt;3-min demo and write blurbs only once the agent is at its best.</div></div>
+      <div class="tr2"><div class="from">"Fire the judges as your customer" after judging</div><div class="mid">→</div><div class="to">Pick a workflow a <b>real team/nonprofit keeps using</b> — that doubles as "adoption potential" for the Orgs track.</div></div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="eyebrow">Idea seeds (illustrative — the war room generates the real portfolio)</div>
+      <div class="tscroll" style="margin-top:12px;border:none">
+        <table class="tbl">
+          <thead><tr><th>Verb</th><th>Concept</th><th>Only-possible-with-Slack "cake"</th><th>Track</th></tr></thead>
+          <tbody>
+            <tr><td>DECIDE</td><td><b>Decision Closer</b> — spots threads going cold with an open decision</td><td>RTS pulls full thread context → drafts decision + owner + deadline to a canvas</td><td><span class="pill b">Orgs</span></td></tr>
+            <tr><td>FIND</td><td><b>Onboarding Concierge</b> — answers "who owns X / where's Y"</td><td>RTS answers from <i>live permission-scoped</i> content, not a stale wiki</td><td><span class="pill b">Orgs</span></td></tr>
+            <tr><td>COORDINATE</td><td><b>Incident Scribe</b> — live timeline during an incident channel</td><td>RTS assembles the running timeline; MCP updates the ticket</td><td><span class="pill b">Orgs</span></td></tr>
+            <tr><td>TRIAGE</td><td><b>Mutual-Aid Router</b> in a nonprofit workspace</td><td>Matches needs↔offers across channels via live search; measurable matches</td><td><span class="pill g">Good</span></td></tr>
+            <tr><td>REMEMBER</td><td><b>Access Companion</b> — simplifies/translates long threads</td><td>RTS scopes to what a member may see; measurable inclusion benefit</td><td><span class="pill g">Good</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — THE PLAN -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>The compressed 8-day plan</h2></div>
+    <p class="sub">Rally built in ~2 days; we have more build runway but must lock the idea fast. Target a submitted entry by <b>Jul 12 night</b> — Jul 13 5pm PT is contingency, never the goal.</p>
+    <div class="tl">
+      <div class="day now"><div class="dh"><span class="dd">Jul 5</span><span class="dn">Day 0 — Ideate & unblock</span><span class="tag-now">TODAY</span></div><div class="db">You: create the free Dev Program sandbox, lean a track. Me: fire the compressed ideation war room off the research brief → ranked top-3 + recommendation.</div></div>
+      <div class="day crit"><div class="dh"><span class="dd">Jul 6</span><span class="dn">Day 1 — Lock & spike the cake</span></div><div class="db">Kickoff decision board → idea locked. Write <code>AGENT_STATE.md</code>. Prove RTS-pulls-context → MCP-acts end-to-end in the sandbox. <b>GO/NO-GO by EOD.</b></div></div>
+      <div class="day"><div class="dh"><span class="dd">Jul 7–10</span><span class="dn">Days 2–5 — Autonomous build</span></div><div class="db">Agent-orchestrated, Opus build agents. Parallel lanes: agent reasoning/tools · Slack surface (Block Kit / assistant UI, canvas) · RTS+MCP integration. A working agent stays installed in the sandbox daily.</div></div>
+      <div class="day"><div class="dh"><span class="dd">Jul 11</span><span class="dn">Day 6 — Polish + seed the demo</span></div><div class="db">Seed a real workflow scenario + one gracefully-handled edge/permission case. Draw the architecture diagram. Tighten the one "wow" screen.</div></div>
+      <div class="day"><div class="dh"><span class="dd">Jul 12</span><span class="dn">Day 7 — Record & submit</span></div><div class="db">Scripted &lt;3-min demo video. Write 150/50-word blurbs + tagline. Grant sandbox test access to both judge emails. <b>Submit tonight.</b></div></div>
+      <div class="day crit"><div class="dh"><span class="dd">Jul 13</span><span class="dn">Day 8 — Contingency buffer</span><span class="tag-ship">5PM PT HARD</span></div><div class="db">Fixes only. Re-verify the sandbox test access works from a clean session. Do not build.</div></div>
+    </div>
+
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card">
+        <div class="eyebrow">Human unblock — Day 0 (≈30 min)</div>
+        <ul class="chk" style="margin-top:10px">
+          <li>Join the <b>Slack Developer Program</b> → provision a sandbox</li>
+          <li>Create a Slack app; enable <b>Agents</b> (auto-adds <code>assistant:write</code>)</li>
+          <li>Add RTS scopes; run the user-token OAuth flow once</li>
+          <li>Decide track lean (or defer to the war room) — <b>see §05</b></li>
+          <li>Confirm Anthropic budget / fleet keys for the build fan-out</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Assets already staged for you</div>
+        <ul class="plist" style="margin-top:10px">
+          <li><span class="b">✓</span><span><b>Research brief</b> — <code>~/slackhack/slackhack-research-brief.md</code> (Rally skeleton, refilled with verified Slack facts). Ready to feed the war room.</span></li>
+          <li><span class="b">↻</span><span><b>AGENT_STATE.md template</b> — liftable from <code>~/Developer/rally/</code>; I'll retarget it Day 1.</span></li>
+          <li><span class="b">↻</span><span><b>Demo/submission patterns</b> — scripted beats + blurb format proven in the Rally <code>docs/hackathon/</code>.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — DECISION -->
+  <section>
+    <div class="sh"><span class="num">05</span><h2>Two decisions → then I fire the war room</h2></div>
+    <p class="sub">Pick a lean on each (or defer to the room). Then hit the green button to launch the compressed ideation → convergence pass. Everything above is settled; only these gate the next move.</p>
+
+    <div class="decision">
+      <!-- Q1 Track -->
+      <form class="qform" data-lavish-question="track"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('track');if(v){window.lavish.queuePrompt('For the Slack hackathon, lean toward the track: '+v,{tag:'choice',text:'Track: '+v,element:event.currentTarget,data:{question:'track',answer:v}});}">
+        <div class="q">① Which track do we lean toward?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="track" value="Agent for Organizations"><span><span class="ot">Agent for Organizations</span><span class="od">Judged on real adoption potential. Bigger, more competitive field; higher upside.</span></span></label>
+          <label class="opt"><input type="radio" name="track" value="Agent for Good"><span><span class="ot">Agent for Good</span><span class="od">Judged on measurable social benefit. Often a thinner field — easier to stand out.</span></span></label>
+          <label class="opt"><input type="radio" name="track" value="let the war room decide"><span><span class="ot">Let the war room decide</span><span class="od">Generate candidates in both; converge on whichever maxes builder-EV.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this answer</button>
+      </form>
+
+      <!-- Q2 Pillar -->
+      <form class="qform" data-lavish-question="pillar"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('pillar');if(v){window.lavish.queuePrompt('For the Slack hackathon, anchor on the required-tech pillar: '+v,{tag:'choice',text:'Pillar: '+v,element:event.currentTarget,data:{question:'pillar',answer:v}});}">
+        <div class="q">② Which required-tech pillar do we anchor on?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="pillar" value="MCP + RTS (hacker path)"><span><span class="ot">MCP + RTS — hacker path <span class="pill g" style="margin-left:6px">rec</span></span><span class="od">Code-driven Bolt app; the "only Slack can do this" story is strongest. Free sandbox unlocks it.</span></span></label>
+          <label class="opt"><input type="radio" name="pillar" value="Agentforce / Agent Builder"><span><span class="ot">Agentforce / Agent Builder</span><span class="od">Low-code custom actions; needs a Salesforce org. Fast for CRM-adjacent flows.</span></span></label>
+          <label class="opt"><input type="radio" name="pillar" value="let the war room decide"><span><span class="ot">Let the war room decide</span><span class="od">Choose the pillar that makes the chosen idea's "cake" strongest.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this answer</button>
+      </form>
+
+      <!-- GO -->
+      <span data-lavish-action="fire-war-room" role="button" tabindex="0"
+        onclick="window.lavish.queuePrompt('Fire the compressed ideation war room now: run the Rally-style pipeline against ~/slackhack/slackhack-research-brief.md — generate 6–8 Slack-agent concepts across the verbs of team work, shortlist, competitor-recon, score on rubric/diff/build/impact, and converge on a single recommended build with a 48h-spike definition. Use my queued track and pillar leans.',{tag:'go',text:'🚀 Fire the ideation war room'});">
+        <button class="gobtn" type="button" onclick="event.stopPropagation();window.lavish.queuePrompt('Fire the compressed ideation war room now: run the Rally-style pipeline against ~/slackhack/slackhack-research-brief.md — generate 6–8 Slack-agent concepts across the verbs of team work, shortlist, competitor-recon, score on rubric/diff/build/impact, and converge on a single recommended build with a 48h-spike definition. Use my queued track and pillar leans.',{tag:'go',text:'🚀 Fire the ideation war room'});">🚀 Fire the compressed ideation war room</button>
+      </span>
+      <div class="hint">Queues your leans + the go-signal. Press <span class="kbd">Send to Agent</span> to launch. You can also just tell me in chat.</div>
+    </div>
+  </section>
+
+  <div class="foot">
+    <span><b>Sources:</b></span>
+    <a href="https://slackhack.devpost.com/rules">Rules</a>
+    <a href="https://slackhack.devpost.com/resources">Resources</a>
+    <a href="https://slack.dev/context-aware-agents-slack-mcp-server-real-time-search/">MCP + RTS guide</a>
+    <a href="https://docs.slack.dev/apis/web-api/real-time-search-api/">RTS API docs</a>
+    <a href="https://docs.slack.dev/tools/developer-sandboxes/">Dev sandboxes</a>
+    <span>· Distilled from <span class="kbd">~/uxmaxx/</span> + <span class="kbd">~/Developer/rally/</span></span>
+  </div>
+</div>

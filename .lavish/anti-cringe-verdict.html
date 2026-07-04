@@ -1,0 +1,207 @@
+<title>Slack Hackathon — The Roast & The Pivot</title>
+<style>
+  :root{
+    --aubergine:#4A154B;--aubergine-2:#611f69;--ink:#1d1c1d;--ink-2:#454245;--muted:#616061;
+    --line:#e8e3e8;--paper:#fff;--wash:#f8f4f9;--wash-2:#f3eef4;
+    --green:#2eb67d;--blue:#36c5f0;--red:#e01e5a;--yellow:#ecb22e;--pink:#e8449b;
+    --radius:15px;--radius-sm:10px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1060px;margin:0 auto;padding:32px 22px 90px}
+  h1,h2,h3{line-height:1.14;letter-spacing:-.02em;margin:0}
+  code{font-family:var(--mono);font-size:.83em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  a{color:var(--aubergine-2)}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:34px}
+
+  .hero{background:linear-gradient(120deg,#2a0c2b,#4A154B 50%,#7a1f52);color:#fff;border-radius:22px;padding:32px;position:relative;overflow:hidden}
+  .hero:after{content:"🔥";position:absolute;right:24px;top:20px;font-size:60px;opacity:.25}
+  .hero .eyebrow{color:#f0c9e6}
+  .hero h1{font-size:29px;font-weight:850;color:#fff;margin-top:7px;max-width:22ch}
+  .hero p{color:#f2e0ee;margin:12px 0 0;max-width:70ch;font-size:15px}
+  .rejects{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .rj{background:rgba(224,30,90,.18);border:1px solid rgba(224,30,90,.45);border-radius:10px;padding:8px 13px;font-size:13px;color:#ffd9e4}
+  .rj b{color:#fff}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:21px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* roast quotes */
+  .roast{display:grid;gap:10px}
+  .rq{background:#fff;border:1px solid var(--line);border-left:4px solid var(--red);border-radius:0 12px 12px 0;padding:14px 16px;font-size:14px;color:var(--ink)}
+  .rq b{color:var(--red)}
+  .rq .lbl{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin-bottom:5px}
+
+  /* laws */
+  .laws{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:720px){.laws{grid-template-columns:1fr}}
+  .law{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px;border-top:3px solid var(--aubergine-2)}
+  .law .n{font-family:var(--mono);font-size:11px;font-weight:800;color:var(--aubergine-2)}
+  .law h4{font-size:14.5px;font-weight:800;color:var(--aubergine);margin:4px 0 6px}
+  .law p{font-size:12.8px;color:var(--ink-2);margin:0}
+  .lawkey{margin-top:14px;background:#1d1c1d;color:#fff;border-radius:12px;padding:16px 18px;font-size:15px;text-align:center;font-weight:650}
+  .lawkey b{color:var(--yellow)}
+  .lawkey .c{color:var(--pink)}
+
+  /* recommendation */
+  .reco{border:2px solid var(--green);border-radius:18px;overflow:hidden;box-shadow:0 10px 30px -16px rgba(46,182,125,.5)}
+  .reco .rh{background:linear-gradient(120deg,#1a7a52,#2eb67d);color:#fff;padding:20px 22px}
+  .reco .rh .k{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#d6f5e7}
+  .reco .rh h3{font-size:23px;font-weight:850;color:#fff;margin-top:4px}
+  .reco .rh p{margin:8px 0 0;color:#eafaf3;font-size:14px;max-width:72ch}
+  .reco .rb{padding:20px 22px;background:var(--paper)}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+  .fb{background:var(--wash);border:1px solid var(--line);border-radius:9px;padding:9px 12px;font-size:12.5px;flex:1 1 150px}
+  .fb b{color:var(--aubergine)}
+  .fb .em{font-size:16px}
+  .arr{color:var(--green);font-weight:800;flex:none}
+  @media(max-width:640px){.arr{display:none}.fb{flex-basis:100%}}
+  .doors{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+  @media(max-width:640px){.doors{grid-template-columns:1fr}}
+  .door{background:#f2fbf7;border:1px solid #cdeede;border-radius:10px;padding:12px 14px}
+  .door .t{font-weight:800;font-size:13px;color:#1a7a52}
+  .door p{margin:4px 0 0;font-size:12.5px;color:var(--ink-2)}
+  .why2{margin-top:14px;font-size:13px;color:var(--ink-2)}
+  .why2 li{margin:5px 0}
+  .why2 b{color:var(--ink)}
+
+  /* runner up */
+  .runner{border:1px dashed var(--aubergine-2);border-radius:14px;padding:18px 20px;background:var(--wash);margin-top:16px}
+  .runner h3{font-size:16px;font-weight:800;color:var(--aubergine)}
+  .runner p{font-size:13.5px;color:var(--ink-2);margin:8px 0 0}
+  .mine{margin-top:12px;border-left:4px solid var(--yellow);background:#fffaf0;border-radius:0 10px 10px 0;padding:12px 14px;font-size:13px;color:var(--ink-2)}
+  .mine b{color:var(--ink)}
+
+  /* input */
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px;margin-top:16px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:13px}
+  .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:12px}
+  .opts{display:grid;gap:9px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:10px;padding:12px 14px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--green);background:#f2fbf7}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:700;font-size:14px}
+  .opt .od{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .rec{font-size:10px;font-weight:800;color:#fff;background:var(--green);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .qbtn{margin-top:12px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:750;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .gobtn{display:block;width:100%;margin-top:6px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;text-align:center}
+  .foot{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Fable, round 2 · roast → diagnosis → pivot</div>
+    <h1>You said "corporate cringe lmao." Fable agreed, and torched it.</h1>
+    <p>The culture-bot is dead. Below: why it was always doomed, the framework that explains it, and the one idea that walks out of the trap — grounded in a decade of people begging for it in their own words.</p>
+    <div class="rejects">
+      <span class="rj">❌ <b>Contradiction Catcher</b> — "no value" (push-nanny)</span>
+      <span class="rj">❌ <b>The Lexicon</b> — "cringe" (culture-performer)</span>
+    </div>
+  </div>
+
+  <!-- ROAST -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The roast (it's deserved)</h2></div>
+    <div class="roast">
+      <div class="rq"><span class="lbl">on the name</span>"The agent that tends your team's <b>living language</b>" — that's not a product, that's a LinkedIn carousel. "Living language" is the <b>"we're a family"</b> of product copy. Dead on arrival at the level of the sentence.</div>
+      <div class="rq"><span class="lbl">on the emoji birth certificate</span>We found the one feral thing left in corporate Slack — the shitpost typo that becomes an emoji — and gave it <b>paperwork</b>. A certificate. Issued by a bot. Deep-linked like a notarized deed. Fun with a notary is not fun.</div>
+      <div class="rq"><span class="lbl">on crowd-ratification</span>"Three teammates tap 🪙 to ratify the coinage." We invented <b>quorum governance for memes</b>. If your joke needs an N-of-M vote to exist, you built the <b>HOA of humor.</b></div>
+      <div class="rq"><span class="lbl">on all the safety gates</span>"Pull-only, consent-gated, receipt-linked" is how you describe a <b>payments API</b>, not a bit. We wrapped fun in so much governance the wrapper became the cringe. <b>GDPR-compliant whimsy. A joke with an audit trail.</b></div>
+    </div>
+  </section>
+
+  <!-- LAWS -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>Why every culture-bot curdles — the framework</h2></div>
+    <p class="sub">Not just a dunk. Three laws that generalize, so we never wander back in.</p>
+    <div class="laws">
+      <div class="law"><div class="n">LAW 1</div><h4>Byproduct, not objective</h4><p>Fun & belonging are second-order effects of doing something else together. Anything whose stated purpose is "produce belonging" advertises intent — and visible intent-to-manufacture-emotion reads as manipulation.</p></div>
+      <div class="law"><div class="n">LAW 2</div><h4>Fun dies top-down; utility survives</h4><p>Loved things spread sideways (a pasted Wordle grid, a blob emoji). A bot is structurally top-down — someone with admin installed it. Nobody resents the CI bot; fun payloads don't survive the same delivery.</p></div>
+      <div class="law"><div class="n">LAW 3</div><h4>Status flows to the user, not the bot</h4><p>Inside jokes & emoji are valuable because they're scarce, earned, unadministered. Minting them on demand prints the currency until it's worthless.</p></div>
+    </div>
+    <div class="lawkey">Cool tools <b>transfer status to their user.</b> &nbsp;Cringe tools <span class="c">perform personality for their owner.</span><br><span style="font-size:13px;opacity:.8">Build the weapon. Skip the ceremony.</span></div>
+  </section>
+
+  <!-- THE MOVE -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>The move — kill the fun lane, build this</h2></div>
+    <div class="reco">
+      <div class="rh">
+        <div class="k">Summoned weapon · chosen venue · zero ceremony</div>
+        <h3>🔁 Third Time — the community answer desk</h3>
+        <p>In a Slack you <i>chose</i> (OSS project, cohort, hackathon workspace), a maintainer flicks 🔁 on yet-another-repeat-question. The agent answers from the community's <b>own conversation history</b> with permalinks — and after the third repeat, drafts the FAQ entry.</p>
+      </div>
+      <div class="rb">
+        <div class="flow">
+          <div class="fb"><span class="em">🔁</span> <b>Summon</b> — maintainer reacts on a repeat Q</div>
+          <div class="arr">→</div>
+          <div class="fb"><span class="em">🔍</span> <b>RTS as the asker</b> — searches history they can see</div>
+          <div class="arr">→</div>
+          <div class="fb"><span class="em">🧾</span> <b>Answers w/ receipts</b> — "answered 3× — @maintainer, March [jump]"</div>
+          <div class="arr">→</div>
+          <div class="fb"><span class="em">📖</span> <b>Drafts the FAQ</b> — canvas entry, maintainer approves</div>
+        </div>
+        <div class="doors">
+          <div class="door"><div class="t">🚪 Door 1 — chosen venue</div><p>A community, not a company. No HR in the building = nothing to be HR-cringe about.</p></div>
+          <div class="door"><div class="t">⚔️ Door 2 — summoned weapon</div><p>Status flows to the maintainer (their old answer cited like precedent) & the asker (ask the archive, save face). Nobody says "culture."</p></div>
+        </div>
+        <ul class="why2">
+          <li><b>Real demand, their own words:</b> <i>"everyone burns out faster b/c the same questions get asked"</i> · <i>"revisit a question I asked last week and couldn't find it"</i> — a decade of HN receipts.</li>
+          <li><b>RTS is genuinely load-bearing:</b> answers only from what the asker can see + writes back to the FAQ — a stale-index docs bot can't do it. (kapa.ai answers from <i>docs</i>; this answers from the <i>conversations that never became docs</i>.)</li>
+          <li><b>The judges ARE the persona</b> — Slack/Salesforce DevRel live this exact pain in their own community Slacks. Agent-for-Good, credibly thin field.</li>
+          <li><b>The real test it passes:</b> the one idea from this whole run you'd still be using the week after judging.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RUNNER UP -->
+    <div class="runner">
+      <h3>🥈 Runner-up — Receipts (the spicy one)</h3>
+      <p>Mid-argument, anyone types <code>@receipts</code> → the agent returns the prior decision: who, when, exact quote, live permalink, only from what you can see. <b>Best single demo moment in the space</b> — <i>"the bot just ended him with a link from March"</i> is a screenshot people actually post. It inverts the surveillance dread: the bot holds the org accountable to its <i>own public words</i>.</p>
+      <div class="mine">⚠️ <b>Honest land mine:</b> this shares territory with the killed <b>Contradiction Catcher</b>. The difference is structural — that was a <b>push-nanny</b> firing warnings on a ritual nobody performs; this is a <b>pull-weapon</b> you summon when you <i>want</i> the receipt right now. But if your "no value" was about the whole <b>decision-memory area</b> (not just the push mechanics), this dies too. That's the gut-check below.</div>
+    </div>
+  </section>
+
+  <!-- DECISION -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>Your two calls</h2></div>
+    <div class="decision">
+      <form class="qform" data-lavish-question="lands"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('lands');if(v){window.lavish.queuePrompt('Third Time verdict: '+v,{tag:'choice',text:v,data:{q:'lands',a:v}});}">
+        <div class="q">① Does Third Time actually land — or still smell wrong?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="lands" value="Third Time lands — spec it" checked><span><span class="ot">🔁 It lands — build it <span class="rec">FABLE'S PICK</span></span><span class="od">Community answer desk, summoned weapon. Spec + demo storyboard.</span></span></label>
+          <label class="opt"><input type="radio" name="lands" value="Prefer Receipts over Third Time"><span><span class="ot">🧾 I'd rather build Receipts</span><span class="od">The argument-ender. Best demo moment (pending gut-check ②).</span></span></label>
+          <label class="opt"><input type="radio" name="lands" value="Still smells wrong — keep pushing"><span><span class="ot">🤨 Still off — keep pushing</span><span class="od">Not there yet. Send Fable back / try a different angle.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue answer</button>
+      </form>
+
+      <form class="qform" data-lavish-question="gutcheck"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('gutcheck');if(v){window.lavish.queuePrompt('Contradiction Catcher gut-check — my no-value was about: '+v,{tag:'choice',text:v,data:{q:'gutcheck',a:v}});}">
+        <div class="q">② Your "no value" on Contradiction Catcher was about…</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="gutcheck" value="just the push-nanny mechanics — pull-mode decision memory is fine"><span><span class="ot">Just the push-nanny mechanics</span><span class="od">→ Receipts is alive; a pull-mode weapon is a different thing.</span></span></label>
+          <label class="opt"><input type="radio" name="gutcheck" value="the whole decision-memory area — avoid it entirely"><span><span class="ot">The whole decision-memory area</span><span class="od">→ Receipts dies too; Third Time it is.</span></span></label>
+          <label class="opt"><input type="radio" name="gutcheck" value="not sure — argue both sides for me"><span><span class="ot">Not sure — argue it for me</span><span class="od">I'll lay out the honest case both ways.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue answer</button>
+      </form>
+
+      <span data-lavish-action="go" role="button" tabindex="0">
+        <button class="gobtn" type="button" onclick="window.lavish.queuePrompt('GO: develop the chosen concept into a full build spec + 3-min demo storyboard + AGENT_STATE.md, and define the 48h RTS cake spike. Use my two queued answers.',{tag:'go',text:'🚀 Develop the pick into a build spec'});">🚀 Develop the pick into a build spec + storyboard</button>
+      </span>
+      <div class="hint">Answer both, hit go — or just tell me in chat. Full roast + all 4 directions: <code>anti-cringe-ideas.md</code></div>
+    </div>
+  </section>
+
+  <div class="foot">Single Fable pass · roast → 3-law diagnosis → escape thesis → 4 ranked directions · "cool tools transfer status to their users; cringe tools perform personality for their owners"</div>
+</div>

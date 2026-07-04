@@ -1,0 +1,246 @@
+<title>Slack Hackathon — Kickoff: Contradiction Catcher</title>
+<style>
+  :root{
+    --aubergine:#4A154B; --aubergine-2:#611f69; --ink:#1d1c1d; --ink-2:#454245;
+    --muted:#616061; --line:#e8e3e8; --paper:#ffffff; --wash:#f8f4f9; --wash-2:#f3eef4;
+    --green:#2eb67d; --blue:#36c5f0; --red:#e01e5a; --yellow:#ecb22e;
+    --radius:14px; --radius-sm:9px;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,Helvetica,Arial,sans-serif;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;min-width:0}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:32px 22px 96px}
+  a{color:var(--aubergine-2)}
+  h1,h2,h3{line-height:1.15;letter-spacing:-.02em;margin:0}
+  .eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--aubergine-2);opacity:.85}
+  section{margin-top:38px}
+  code{font-family:var(--mono);font-size:.85em;background:var(--wash-2);padding:1px 6px;border-radius:6px;color:var(--aubergine-2)}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,minmax(0,1fr))}.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  .hero{background:linear-gradient(135deg,var(--aubergine),var(--aubergine-2) 60%,#7c2d84);color:#fff;border-radius:20px;padding:32px;position:relative;overflow:hidden}
+  .hero:after{content:"";position:absolute;right:-60px;top:-70px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(46,182,125,.35),transparent 65%)}
+  .hero .eyebrow{color:#e9c9ec}
+  .hero h1{font-size:32px;font-weight:850;color:#fff;margin-top:6px}
+  .hero .oneliner{color:#f1e6f2;margin:12px 0 0;max-width:70ch;font-size:15.5px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .badge{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:6px 13px;font-size:12.5px;font-weight:650;color:#fff}
+  .badge b{color:var(--yellow)}
+  .prov{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:16px;font-size:12px;color:#e6d3e8}
+  .prov b{color:#fff}
+
+  .sh{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+  .sh h2{font-size:22px;font-weight:820;color:var(--aubergine)}
+  .sh .num{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;background:var(--aubergine);border-radius:7px;padding:3px 8px;flex:none}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+  /* wow beat filmstrip */
+  .film{display:flex;flex-wrap:wrap;gap:8px}
+  .frame{flex:1 1 150px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius-sm);padding:13px 14px}
+  .frame .n{font-family:var(--mono);font-size:11px;color:var(--aubergine-2);font-weight:800}
+  .frame .t{font-size:13px;color:var(--ink-2);margin-top:5px;line-height:1.4}
+  .frame.hit{border-color:var(--yellow);background:#fffaf0}
+  .frame.acl{border-color:var(--green);background:#f2fbf7}
+
+  /* spike gate */
+  .gate{border:2px solid var(--green);border-radius:16px;overflow:hidden}
+  .gate .gh{background:#f2fbf7;padding:14px 18px;border-bottom:1px solid #d6efe3;font-weight:800;color:#1a7a52;font-size:15px}
+  .gate .gb{padding:16px 18px}
+  .must{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+  .must li{display:flex;gap:11px;font-size:13.5px;color:var(--ink-2);align-items:flex-start}
+  .must .c{flex:none;width:22px;height:22px;border-radius:6px;background:#e6f7ef;color:#1a7a52;display:grid;place-items:center;font-weight:800;font-size:12px}
+  .fb{margin-top:14px;border-left:4px solid var(--yellow);background:#fffaf0;border-radius:0 10px 10px 0;padding:11px 14px;font-size:13px;color:var(--ink-2)}
+  .fb b{color:var(--ink)}
+
+  /* rubric bars */
+  .rub{display:grid;gap:10px}
+  .rrow{display:grid;grid-template-columns:200px 1fr;gap:12px;align-items:center}
+  @media(max-width:640px){.rrow{grid-template-columns:1fr}}
+  .rname{font-size:13px;font-weight:650}.rname small{color:var(--muted);font-weight:500;display:block;font-size:11.5px}
+  .bar{height:22px;background:var(--wash-2);border-radius:6px;overflow:hidden;position:relative}
+  .bar i{position:absolute;left:0;top:0;bottom:0;display:block;border-radius:6px}
+  .bar span{position:absolute;right:8px;top:0;line-height:22px;font-size:11px;font-weight:700;color:var(--ink-2)}
+
+  /* scoreboard */
+  .tscroll{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius)}
+  .tbl{width:100%;border-collapse:collapse;font-size:13px}
+  .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  .tbl th{background:var(--wash-2);font-weight:750;color:var(--aubergine);font-size:11.5px;text-transform:uppercase;white-space:nowrap}
+  .tbl tr:last-child td{border-bottom:none}
+  .tbl .win{background:#f2fbf7}
+  .v{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px}
+  .v.build{background:#e6f7ef;color:#1a7a52}.v.fall{background:#fef4de;color:#9a7412}.v.dead{background:#fde7ee;color:#b01444}
+
+  .plist{list-style:none;padding:0;margin:0;display:grid;gap:9px}
+  .plist li{display:flex;gap:10px;font-size:13.5px;color:var(--ink-2);align-items:flex-start}
+  .plist .b{flex:none;width:22px;height:22px;border-radius:6px;background:var(--wash-2);color:var(--aubergine-2);display:grid;place-items:center;font-size:12px;font-weight:800}
+  .plist b{color:var(--ink)}
+  .never{border-left:4px solid var(--red);background:#fdf0f4;border-radius:0 10px 10px 0;padding:11px 14px;font-size:13px;color:var(--ink-2);margin-top:12px}
+  .never b{color:var(--red)}
+
+  /* decisions */
+  .decision{background:linear-gradient(180deg,#fff,var(--wash));border:2px solid var(--aubergine);border-radius:18px;padding:24px}
+  .qform{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;margin-top:13px}
+  .qform .q{font-weight:750;font-size:15px;color:var(--aubergine);margin-bottom:10px}
+  .opts{display:grid;gap:8px}
+  .opt{display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:var(--radius-sm);padding:11px 13px;cursor:pointer;transition:.14s}
+  .opt:hover{border-color:var(--aubergine-2);background:var(--wash)}
+  .opt input{margin-top:3px;accent-color:var(--aubergine);width:16px;height:16px;flex:none}
+  .opt .ot{font-weight:650;font-size:14px}.opt .od{font-size:12.5px;color:var(--muted);margin-top:1px}
+  .rec-tag{font-size:10px;font-weight:800;color:#fff;background:var(--green);border-radius:999px;padding:1px 7px;margin-left:6px}
+  .qbtn{margin-top:12px;background:var(--aubergine);color:#fff;border:none;border-radius:10px;padding:9px 17px;font-weight:750;font-size:13.5px;cursor:pointer;font-family:inherit}
+  .qbtn:hover{background:var(--aubergine-2)}
+  .gobtn{display:block;width:100%;margin-top:18px;background:var(--green);color:#fff;border:none;border-radius:12px;padding:15px;font-weight:850;font-size:16px;cursor:pointer;font-family:inherit;box-shadow:0 8px 20px -8px rgba(46,182,125,.7)}
+  .gobtn:hover{filter:brightness(1.05)}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;text-align:center}
+  .callout{border-left:4px solid var(--blue);background:#eef9fe;border-radius:0 10px 10px 0;padding:12px 15px;font-size:13px;color:var(--ink-2)}
+  .callout b{color:var(--ink)}
+  .foot{margin-top:38px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .kbd{font-family:var(--mono);font-size:11.5px}
+</style>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">War room converged · 27 agents · phase 7 — kickoff</div>
+    <h1>🎯 Build: Contradiction Catcher</h1>
+    <div class="oneliner">A decision-lock on a thread fires a <b>permission-scoped live RTS search</b> for a prior <b>conflicting</b> decision the locker is cleared to see — drops an inline <code>⚠️ conflicts with @Dana's decision in #product [jump]</code> and opens an MCP reconciliation canvas with both DRIs @-ed.</div>
+    <div class="badges">
+      <span class="badge">Track: <b>Organizations</b></span>
+      <span class="badge">Pillar: <b>RTS</b> (load-bearing) + <b>MCP</b> (act)</span>
+      <span class="badge">Deadline <b>Jul 13, 5pm PT</b></span>
+      <span class="badge">4/5 judges ranked <b>#1</b></span>
+    </div>
+    <div class="prov"><span><b>24</b> raw concepts</span>→<span><b>7</b> shortlist</span>→<span><b>3</b> finalists</span>→<span><b>1</b> build</span><span>· 1.28M tokens · 0 errors · track+pillar chosen by the room</span></div>
+  </div>
+
+  <!-- WOW BEAT -->
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The wow beat — one unfakeable screen</h2></div>
+    <p class="sub">Trigger, surprise, and action are one continuous ~2-second moment. The last frame is the whole game: the ACL boundary proves this is RTS-only, not a chatbot over a stale index.</p>
+    <div class="film">
+      <div class="frame"><div class="n">1 · trigger</div><div class="t">Someone locks a decision in-thread: <b>"We're standardizing on Postgres."</b></div></div>
+      <div class="frame hit"><div class="n">2 · catch (~2s)</div><div class="t">Inline ⚠️ <b>"conflicts with @Dana's decision in #product-private on May 3: 'we standardize on Mongo'"</b> — <code>[jump]</code> resolves to Dana's real message.</div></div>
+      <div class="frame"><div class="n">3 · act</div><div class="t">A reconciliation <b>canvas blooms</b> — both decisions side-by-side, both DRIs @-ed.</div></div>
+      <div class="frame acl"><div class="n">4 · the kicker</div><div class="t">A third conflict in a channel the locker <b>isn't in</b> stays correctly <b>hidden</b> — live Slack ACLs enforced at query time. <b>RTS-only.</b></div></div>
+    </div>
+  </section>
+
+  <!-- SPIKE GATE -->
+  <section>
+    <div class="sh"><span class="num">02</span><h2>Do this FIRST — the 48h cake spike (go/no-go)</h2></div>
+    <p class="sub">Wire the whole loop on the free Enterprise Grid sandbox and prove the permission boundary on camera before building any polish. This gate decides go vs pivot.</p>
+    <div class="gate">
+      <div class="gh">✅ Must be TRUE to proceed (all three, on seeded data)</div>
+      <div class="gb">
+        <ul class="must">
+          <li><span class="c">1</span><span>Keyword RTS query reliably returns the seeded prior conflict <b>from the private channel</b> the locker can see, with a resolvable permalink.</span></li>
+          <li><span class="c">2</span><span>The <b>negative control</b> — a conflict in a channel the locker is NOT in — is correctly <b>NOT surfaced</b>. This is the unfakeable ACL artifact. <b>Never descope it.</b></span></li>
+          <li><span class="c">3</span><span>The <b>temp-0 classifier</b> fires ⚠️ across ~10 runs with <b>zero false no-ops and zero false alarms.</b></span></li>
+        </ul>
+        <div class="fb"><b>Fallback if it wobbles:</b> record a clean take AND ship <b>warning-only</b> (drop the canvas) — still lands the workflow + RTS on one screen. If the boundary demo can't be staged or the cake fails outright → <b>pivot to Leaving Brain</b> (honest shared-footprint, search→render, no binary-judgment gamble).</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:14px"><b>Build discipline (non-negotiable):</b> narrate the <b>ACL/permission-aware</b> story (not freshness) · force <b>keyword mode</b> (never a natural-language RTS query) · classifier at <b>temp 0</b> with stark few-shot exemplars · <b>single locker identity</b> (no participant-union — no API exists) · <b>record a fallback take</b> (the ~4% residual is real).</div>
+  </section>
+
+  <!-- RUBRIC -->
+  <section>
+    <div class="sh"><span class="num">03</span><h2>The real rubric (fact-checked) — 4 × 25%</h2></div>
+    <p class="sub">⚠️ Correction from the prep playbook: the official Devpost rubric is four <b>equally-weighted</b> criteria, tie-break in this order — NOT the "3 criteria" the marketing pages imply. Here's where Contradiction Catcher scores.</p>
+    <div class="card"><div class="rub">
+      <div class="rrow"><div class="rname">Quality of the Idea <small>the swing axis</small></div><div class="bar"><i style="width:92%;background:var(--green)"></i><span>names & beats real incumbents blind to contradiction</span></div></div>
+      <div class="rrow"><div class="rname">Technological Impl. <small>load-bearing RTS/MCP + code</small></div><div class="bar"><i style="width:86%;background:var(--blue)"></i><span>permission-aware retrieval, legible</span></div></div>
+      <div class="rrow"><div class="rname">Potential Impact <small>must be QUANTIFIED</small></div><div class="bar"><i style="width:74%;background:var(--yellow)"></i><span>a saved workstream per catch — state the reach</span></div></div>
+      <div class="rrow"><div class="rname">Design <small>frontend/backend polish</small></div><div class="bar"><i style="width:70%;background:var(--aubergine-2)"></i><span>universal multiplier — invest here</span></div></div>
+    </div>
+    <div class="callout" style="margin-top:14px"><b>Orgs-track hard gate:</b> register a Slack <b>App ID</b> and <b>submit/resubmit to the Slack Marketplace during the hackathon</b> — mandatory for the Organizations track. <b>Potential Impact scores nothing if left implicit</b> — quantify it in the writeup (stickiness is invisible in a 5–7-min judging pass).</div>
+    </div>
+  </section>
+
+  <!-- SCOPE + FINALISTS -->
+  <section>
+    <div class="sh"><span class="num">04</span><h2>MVP scope & why the rivals lost</h2></div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="eyebrow">MVP build order</div>
+        <ul class="plist" style="margin-top:11px">
+          <li><span class="b">1</span><span><b>Sandbox + Orgs gate</b> — Enterprise Grid org, internal app, register App ID + Marketplace submit</span></li>
+          <li><span class="b">2</span><span><b>Trigger</b> — <code>:lock:</code> reaction / message shortcut on a thread</span></li>
+          <li><span class="b">3</span><span><b>Retrieval</b> — one RTS <code>assistant.search.context</code>, keyword mode, incl. <code>private_channel</code>, as the locker</span></li>
+          <li><span class="b">4</span><span><b>Judgment</b> — temp-0 reversal-vs-refinement classifier</span></li>
+          <li><span class="b">5</span><span><b>Act 1</b> — inline ⚠️ + live permalink</span></li>
+          <li><span class="b">6</span><span><b>Act 2</b> — MCP reconciliation canvas, both DRIs @-ed</span></li>
+          <li><span class="b">7</span><span><b>Seed data</b> — 2 conflicts (1 private) + the negative control</span></li>
+          <li><span class="b">8</span><span><b>Submission</b> — &lt;3-min video, arch diagram, sandbox test access, impact-quantified writeup</span></li>
+        </ul>
+        <div class="never"><b>Never cut:</b> the negative-control (ACL boundary) and the live permalink — the only artifacts that make it unfakeable. Descope order: reassign/DM → canvas→warning-only → single-locker scope → keyword-only.</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">The finalists (killed on verified facts)</div>
+        <div class="tscroll" style="margin-top:11px;border:none">
+          <table class="tbl">
+            <thead><tr><th>Finalist</th><th>OVR</th><th></th></tr></thead>
+            <tbody>
+              <tr class="win"><td><b>Contradiction Catcher</b><br><small style="color:var(--muted)">caller-scope-native — RTS never inverts its headline</small></td><td><b>7.95</b></td><td><span class="v build">BUILD</span></td></tr>
+              <tr><td><b>Provenance Guard</b><br><small style="color:var(--muted)">REFUTED: no pre-send hook exists; shortcut can't read the draft → non-native</small></td><td>7.85</td><td><span class="v dead">DEAD</span></td></tr>
+              <tr><td><b>Leaving Brain</b><br><small style="color:var(--muted)">RTS runs as the caller → "what only Sarah knew" is unreachable. Kept as fallback</small></td><td>7.5</td><td><span class="v fall">FALLBACK</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="font-size:12.5px;color:var(--muted);margin:12px 0 0">Full reasoning + all 7 shortlist + cruxes → <code>slackhack-decision-memo.md</code></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- DECISIONS -->
+  <section>
+    <div class="sh"><span class="num">05</span><h2>Your call → then I start the build loop</h2></div>
+    <p class="sub">Defaults are pre-selected from the war room. Confirm or override, then hit 🚀 to spin up <code>AGENT_STATE.md</code> and run the cake spike as the first gate.</p>
+    <div class="decision">
+
+      <form class="qform" data-lavish-question="build"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('build');if(v){window.lavish.queuePrompt('Slack build decision: '+v,{tag:'choice',text:'Build: '+v,data:{q:'build',a:v}});}">
+        <div class="q">① Approve the build?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="build" value="Contradiction Catcher (approved)" checked><span><span class="ot">Contradiction Catcher <span class="rec-tag">WAR ROOM PICK</span></span><span class="od">4/5 judges #1; caller-scope-native; rivals dead on verified facts.</span></span></label>
+          <label class="opt"><input type="radio" name="build" value="pivot to Leaving Brain"><span><span class="ot">Pivot to Leaving Brain</span><span class="od">The fallback — safer retrieve→render floor, but weaker idea-quality.</span></span></label>
+          <label class="opt"><input type="radio" name="build" value="show me the full memo before deciding"><span><span class="ot">Show me the full memo first</span><span class="od">Read slackhack-decision-memo.md before committing.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this answer</button>
+      </form>
+
+      <form class="qform" data-lavish-question="sequence"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('sequence');if(v){window.lavish.queuePrompt('Slack build sequencing: '+v,{tag:'choice',text:'Sequence: '+v,data:{q:'sequence',a:v}});}">
+        <div class="q">② Start with the 48h cake spike as go/no-go?</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="sequence" value="yes — spike first, gate before polish" checked><span><span class="ot">Yes — spike first <span class="rec-tag">RECOMMENDED</span></span><span class="od">Prove the ACL boundary on the sandbox before building anything else.</span></span></label>
+          <label class="opt"><input type="radio" name="sequence" value="build straight through, no gate"><span><span class="ot">Build straight through</span><span class="od">Riskier — the classifier/ACL demo is the whole game.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this answer</button>
+      </form>
+
+      <form class="qform" data-lavish-question="reddit"
+        onsubmit="event.preventDefault();var v=new FormData(event.currentTarget).get('reddit');if(v){window.lavish.queuePrompt('Reddit hackathon parallel research: '+v,{tag:'choice',text:'Reddit: '+v,data:{q:'reddit',a:v}});}">
+        <div class="q">③ Also fire the Reddit research in parallel? (deadlines nearly collide: Slack Jul 13 · Reddit Jul 15)</div>
+        <div class="opts">
+          <label class="opt"><input type="radio" name="reddit" value="yes — run Reddit META_PROMPT now to compare builds" checked><span><span class="ot">Yes — run it now <span class="rec-tag">CHEAP</span></span><span class="od">Research/orchestration only; lets you compare both recommended builds before committing build time.</span></span></label>
+          <label class="opt"><input type="radio" name="reddit" value="hold Reddit — focus only on Slack"><span><span class="ot">Hold — focus on Slack</span><span class="od">One target, all-in. Fire Reddit later if Slack stalls.</span></span></label>
+        </div>
+        <button class="qbtn" type="submit">Queue this answer</button>
+      </form>
+
+      <span data-lavish-action="start-build" role="button" tabindex="0">
+        <button class="gobtn" type="button" onclick="window.lavish.queuePrompt('GO: start the Slack build. Scaffold ~/Developer/slack-hackathon/ with an AGENT_STATE.md loop for Contradiction Catcher, stand up the free Enterprise Grid sandbox plan, and run the 48h cake spike (RTS keyword search + temp-0 classifier + inline warning + MCP canvas + the negative-control ACL demo) as the go/no-go gate. Use my queued decisions.',{tag:'go',text:'🚀 Start the build loop'});">🚀 Start the AGENT_STATE.md build loop</button>
+      </span>
+      <div class="hint">Queues your answers + the go-signal. Press <span class="kbd">Send to Agent</span> to launch — or just tell me in chat.</div>
+    </div>
+  </section>
+
+  <div class="foot">
+    Memo: <code>~/Developer/slack-hackathon/slackhack-decision-memo.md</code> · Prep: <code>.lavish/slackhack-prep.html</code> ·
+    <a href="https://docs.slack.dev/apis/web-api/real-time-search-api/">RTS API</a> ·
+    <a href="https://slackhack.devpost.com/rules">Rules</a>
+  </div>
+</div>
