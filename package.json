@@ -6,6 +6,7 @@
   "description": "Receipts — a Slack agent that ends arguments with the actual prior decision (RTS search-as-you → verbatim quote + permalink).",
   "scripts": {
     "spike": "bun run scripts/spike.ts",
+    "seed": "bun run scripts/seed.ts",
     "dev": "bun run src/app.ts"
   },
   "dependencies": {
