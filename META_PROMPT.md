@@ -17,6 +17,31 @@ Open a fresh Claude Code session in `~/Developer/slack-hackathon/` and send:
 
 ---
 
+## ⛔ PHASE 0 — RECON & RECORD THE WHOLE HACKATHON SITE (do this FIRST, no exceptions)
+
+Before a single idea, claim, or "de-risked" assertion:
+1. **Scrape EVERY tab/section of the hackathon site, not just the landing page** — Overview,
+   Rules, **Details/FAQ**, Resources, Updates, Discussions, and every linked sub-page. Devpost
+   buries the load-bearing facts (event codes, sandbox/provisioning gates, eligibility, exact
+   deadlines, payment walls) in the **FAQ/Details** sub-pages, NOT the front page. If WebFetch
+   returns an empty/JS shell, render it with **browser-harness**. Read them THROUGH.
+2. **Record everything to `hackathon-facts.md` (verbatim quotes + URLs) AND a persistent memory.**
+   Capture: deadline, prizes/tiers, required tech, tracks, judging rubric, submission artifacts,
+   and especially **SETUP / ACCESS / PROVISIONING** (accounts, sandboxes, event codes, payment
+   gates, scopes).
+3. **Before asserting ANY access/cost/requirement fact — RE-READ `hackathon-facts.md` first.**
+   Never claim "it's free / no blocker / de-risked" from an assumption or one search snippet. If
+   it isn't in the recorded facts with a source, it is NOT verified — go read the site.
+
+> **Why this rule exists (2026-07-05 failure):** the Slack sandbox **event code** AND the
+> "paid-plan-workspace / payment-method required" provisioning gate were both sitting in the FAQ
+> (`slackhack.devpost.com/details/faq-slackagent-builder`). Skipping that page and trusting one
+> search snippet produced a false "sandbox is $0, de-risked, no blocker" claim that dead-ended the
+> build at Phase 0 — the human found the event code the agent should have. Scrape thoroughly →
+> record → reference before speaking.
+
+---
+
 ## ROLE & MISSION (agent)
 
 Orchestrate a hackathon-**win** research effort for the **Slack Agent Builder Challenge**

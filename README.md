@@ -20,8 +20,10 @@ tech (**Agent Builder/Agentforce · MCP server · RTS API**) in a way not otherw
 for `slackhack@salesforce.com` and `testing@devpost.com`.
 
 ## The unlock
-The free **Slack Developer Program sandbox** is a full Enterprise Grid org → unlocks **RTS / MCP /
-Agent Builder** at $0.
+The **Slack Developer Program sandbox** is a full Enterprise Grid org that unlocks **RTS / MCP /
+Agent Builder** and is **$0 (not charged)** — BUT provisioning is human-gated: you need a paid-plan
+workspace, a **card on file** (not charged), or a hackathon **event code**. That gate is the real
+Phase-0 blocker (see `HUMAN_SETUP.md`), not "free and instant."
 
 Links: [Rules](https://slackhack.devpost.com/rules) · [Resources](https://slackhack.devpost.com/resources) ·
 [Dev sandboxes](https://docs.slack.dev/tools/developer-sandboxes/)

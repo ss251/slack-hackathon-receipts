@@ -60,21 +60,17 @@ export async function searchContext(opts: {
     return { ok: false, error: raw?.error ?? `http_${res.status}`, hits: [], raw };
   }
 
-  // Response shape is learned during the spike; normalize defensively. RTS returns results
-  // under results.messages (each with text, channel, user, ts, permalink, is_author_bot).
-  const messages =
-    raw?.results?.messages ??
-    raw?.messages ??
-    raw?.results ??
-    [];
+  // Verified shape (assistant.search.context): results.messages[] with fields
+  // { content, author_name, author_user_id, channel_name, channel_id, message_ts, permalink, is_author_bot }
+  const messages = raw?.results?.messages ?? raw?.messages ?? [];
 
   const hits: RtsHit[] = (Array.isArray(messages) ? messages : []).map((m: any) => ({
-    text: m?.text ?? m?.message?.text ?? "",
-    channelId: m?.channel?.id ?? m?.channel_id ?? m?.channel,
-    channelName: m?.channel?.name ?? m?.channel_name,
-    author: m?.user?.name ?? m?.username ?? m?.user,
-    authorId: m?.user?.id ?? m?.user_id,
-    ts: m?.ts ?? m?.message?.ts,
+    text: m?.content ?? m?.text ?? m?.message?.text ?? "",
+    channelId: m?.channel_id ?? m?.channel?.id,
+    channelName: m?.channel_name ?? m?.channel?.name,
+    author: m?.author_name ?? m?.user?.name ?? m?.username,
+    authorId: m?.author_user_id ?? m?.user?.id ?? m?.user_id,
+    ts: m?.message_ts ?? m?.ts,
     permalink: m?.permalink ?? m?.message?.permalink,
     isAuthorBot: m?.is_author_bot ?? false,
   }));

@@ -79,20 +79,21 @@ a prominent **Jump to message** button, and the "asked & answered N× · what's 
 line. Loop the card design until it reads as *evidence*, not chat. Screenshot on iPhone + desktop.
 
 ## §7 — Phase plan (do first-unchecked)
-**Phase 0 — Human unblock (§ founder, ~30 min)**
-- [ ] Join Slack Developer Program → provision the Enterprise Grid sandbox
-- [ ] Create app; enable **Agents** (auto-adds `assistant:write`); add RTS scopes
-      (`search:read.public` bot+user; `search:read.private` user); note the App ID
-- [ ] Confirm Anthropic budget / fleet keys for the build fan-out
+**Phase 0 — Human unblock (DONE 2026-07-05, via browser-harness)**
+- [x] Joined Slack Developer Program → provisioned Enterprise Grid sandbox **Receipts**
+      (`receipts-hackathon.enterprise.slack.com`, event code, no card)
+- [x] Created app **Receipts** (App ID `A0BERD58JQP`) from `manifest.yaml`; installed; bot +
+      user tokens (search:read.public/private) in `.env.local`. (Agents toggle + app-level
+      token + signing secret still TODO — only needed for Phase 2 runtime, not the spike.)
 
-**Phase 1 — THE 48h CAKE SPIKE (go/no-go — do before any polish)**
-- [ ] **Spike-1 (identity, #1 risk):** prove RTS `assistant.search.context` runs **as the
-      summoner** — verify `app_mention` delivers a usable `action_token` for bot-token search; if
-      not, wire a one-time **user-token OAuth** or fall back to bot-scope public search.
-- [ ] **Spike-2 (retrieval):** on seeded data, a keyword search reliably returns the prior
-      decision/answer from **conversation history** with a resolvable permalink.
-- [ ] **Spike-3 (ACL boundary):** a decision in a channel the summoner is NOT in is correctly
-      **not** surfaced (the unfakeable artifact). **GO/NO-GO gate here.**
+**Phase 1 — THE 48h CAKE SPIKE — 🟢 GO (all 3 PASS, 2026-07-05)**
+- [x] **Spike-1 (identity, #1 risk):** RTS `assistant.search.context` works **with the user
+      token directly — no action_token needed.** Risk retired.
+- [x] **Spike-2 (retrieval):** keyword search returns the seeded "dropping Node 18" decision
+      from #general **with a resolvable permalink**. (Bug found+fixed: RTS returns `content`, not
+      `text`; mapper corrected in `src/rts.ts`.)
+- [x] **Spike-3 (ACL boundary):** the private #security-audit decision is correctly **NOT**
+      surfaced to the summoner. The unfakeable demo kicker is real. **GO.**
 
 **Phase 2 — Build the loop** *(after GO)*
 - [x] Repo scaffold: `package.json`, `tsconfig`, `.gitignore`, `.env.example`, `src/rts.ts`
@@ -123,8 +124,12 @@ line. Loop the card design until it reads as *evidence*, not chat. Screenshot on
 - 2026-07-05 — Concept locked: **Receipts** (hero) + FAQ-deflect (sticky), one engine. Gut-check
   cleared (engine ≠ nanny). Track: Agent for Good, community venue. This file created.
 - 2026-07-05 — Repo scaffolded (bun): RTS wrapper + cake-spike script + HUMAN_SETUP.md. Deps
-  installed, typecheck clean, spike fails cleanly without a token. **BLOCKED on Phase-0 human
-  unblock** (sandbox + tokens → `.env.local`), then `bun run spike` is the GO/NO-GO gate.
+  installed, typecheck clean, spike fails cleanly without a token.
+- 2026-07-05 — **Phase 0 DONE + Phase 1 🟢 GO.** Sandbox provisioned (event code, no card), app
+  Receipts (A0BERD58JQP) created from manifest + installed, tokens in `.env.local`. Seeded #general
+  (Node-18 decision + repeats) + private #security-audit. **Spike: 3/3 PASS** — RTS works w/ user
+  token, retrieval w/ permalink, ACL boundary holds. Concept proven end-to-end on real Slack.
+  **NEXT = Phase 2: build the Bolt app loop** (`src/app.ts`: summon → search → receipt card → FAQ).
 
 ---
 

@@ -30,16 +30,15 @@ async function api(method: string, body: Record<string, unknown>) {
 }
 
 async function ensureChannel(name: string, isPrivate: boolean): Promise<string | null> {
+  // find first (works even without channels:manage) — reuse an existing channel like #general
+  const types = isPrivate ? "private_channel" : "public_channel";
+  const list = await api("conversations.list", { types, limit: 1000, exclude_archived: true });
+  const existing = list.channels?.find((c: any) => c.name === name);
+  if (existing) { console.log(`  = reusing #${name}`); return existing.id; }
+  // else try to create (needs channels:manage / groups:write)
   const created = await api("conversations.create", { name, is_private: isPrivate });
   if (created.ok) { console.log(g(`  + created #${name}`)); return created.channel.id; }
-  if (created.error === "name_taken") {
-    // find it
-    const types = isPrivate ? "private_channel" : "public_channel";
-    const list = await api("conversations.list", { types, limit: 1000, exclude_archived: true });
-    const ch = list.channels?.find((c: any) => c.name === name);
-    if (ch) { console.log(`  = reusing #${name}`); return ch.id; }
-  }
-  console.log(r(`  ✗ #${name}: ${created.error}`));
+  console.log(r(`  ✗ #${name}: ${created.error} (can't create; set SEED_PUBLIC_CHANNEL to an existing channel like 'general')`));
   return null;
 }
 

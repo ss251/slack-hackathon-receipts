@@ -65,11 +65,19 @@ chatbot wrapped in a Slack UI" (the rules name that as the losing pattern).
   `slackhack@salesforce.com` **and** `testing@devpost.com`.
 - No third-party trademarks/copyrighted material without permission.
 
-**Access / cost (DE-RISKED — the SDK-Skeptic check passed)**
-- The **Slack Developer Program sandbox is a free full Enterprise Grid org** (up to 2
-  sandboxes; 3 workspaces + 8 users each; 6-month life; $0). It unlocks the paid-plan-gated
-  AI features — **RTS API, MCP, Agent Builder, Agents/assistants** — at no cost. A solo dev
-  can build the full agentic path for free. This is the equivalent of Rally's "free testnet."
+**Access / cost — CORRECTED 2026-07-05 (earlier "DE-RISKED / $0 / no blocker" was overconfident)**
+- The **Slack Developer Program sandbox is a full Enterprise Grid org** (up to 2 sandboxes;
+  3 workspaces + 8 users each; 6-month life) and the org itself is **$0 — you are not charged**.
+  It unlocks the paid-plan-gated AI features — **RTS API, MCP, Agent Builder, Agents/assistants**.
+- ⚠️ **BUT provisioning it is gated by a human-verification wall** discovered live in the
+  browser flow: the Sandboxes dashboard says *"Paid plan workspace required — you are not yet
+  eligible... join a paid plan workspace or provide a payment method... (you will not be
+  charged)."* So provisioning requires ONE of: (a) membership in a paid-plan workspace, (b) a
+  **payment method on file** (card, not charged — human check), or (c) a **"Provision Sandbox
+  With Event Code"** path for hackathon/event attendees. The event code is NOT public on the
+  Devpost pages (FAQ/Updates/Resources) — likely emailed on registration or participant-gated.
+  This is the real Phase-0 blocker, NOT "$0, no friction." Get the event code or accept the
+  card-on-file before assuming the sandbox is free-and-instant.
 - Enabling **Agents** on an app auto-adds `assistant:write`.
 
 ---
