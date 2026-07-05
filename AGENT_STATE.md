@@ -97,9 +97,16 @@ line. Loop the card design until it reads as *evidence*, not chat. Screenshot on
 
 **Phase 2 — Build the loop** *(after GO)*
 - [x] Repo scaffold: `package.json`, `tsconfig`, `.gitignore`, `.env.example`, `src/rts.ts`
-      (RTS engine wrapper), `scripts/spike.ts` (the gate). `bun install` ✓, typecheck ✓, spike
-      fails cleanly w/o token ✓. (2026-07-05)
-- [ ] Bolt app scaffold (TypeScript, Socket Mode dev) + summon handlers (app_mention + shortcut)
+      (RTS engine wrapper), `scripts/spike.ts` (the gate). `bun install` ✓, typecheck ✓. (2026-07-05)
+- [x] **Pipeline built + proven** (`src/llm.ts` keyword+judge w/ OAuth-or-heuristic; `src/receipts.ts`
+      summon→RTS-search-as-you→judge→Block-Kit receipt card w/ jump-link; `scripts/dry-run.ts`).
+      Dry-run produces the correct card from live RTS data (heuristic path; OAuth token expired so
+      LLM seam falls back). (2026-07-05)
+- [x] **Bolt app live** (`src/app.ts`, Socket Mode) — app_mention + "Pull receipts" shortcut →
+      posts the receipt card. Boots + connects (app-level token `xapp-` generated, in `.env.local`).
+- [ ] LIVE smoke test: human @mentions @Receipts in the sandbox #general → card posts (needs a
+      human mention; bot-self-mention doesn't fire app_mention). App is running in bg.
+- [ ] FAQ-deflect canvas beat (repeat question → grow a canvas). Signing secret + Railway = HTTP deploy.
 - [ ] RTS search-as-summoner module (keyword mode, permalink extraction)
 - [ ] Claude rank/repeat-detect/format module (temp 0)
 - [ ] Receipt card (Block Kit) + Jump button + whisper-first option
