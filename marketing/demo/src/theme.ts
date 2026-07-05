@@ -1,9 +1,22 @@
+import { staticFile, delayRender, continueRender, cancelRender } from "remotion";
+import { loadFont } from "@remotion/fonts";
+
 export const FPS = 30;
 export const W = 1920, H = 1080;
+
 export const C = {
-  bg0: "#160a18", bg1: "#2a1030", aubergine: "#4A154B", aubergine2: "#611f69",
-  green: "#2eb67d", greenLt: "#42d492", ink: "#ffffff", muted: "#cdbcd6",
-  scrim: "rgba(12,6,14,0.0)", card: "#1d1c1d",
+  bg0: "#160a18", bg1: "#2a1030", aubergine: "#4A154B",
+  green: "#2eb67d", greenLt: "#42d492",
+  ink: "#ffffff", sub: "rgba(255,255,255,0.72)", muted: "#cdbcd6",
 };
-export const SANS = '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
-export const MONO = 'ui-monospace, "SF Mono", Menlo, monospace';
+
+// Local Inter (render-safe: zero network at render time)
+export const FONT = "InterLocal";
+const h = delayRender("inter-fonts");
+Promise.all([
+  loadFont({ family: FONT, url: staticFile("Inter-Regular.woff2"), weight: "400" }),
+  loadFont({ family: FONT, url: staticFile("Inter-SemiBold.woff2"), weight: "600" }),
+  loadFont({ family: FONT, url: staticFile("Inter-Bold.woff2"), weight: "700" }),
+]).then(() => continueRender(h)).catch((e) => cancelRender(e));
+
+export const FAMILY = `${FONT}, -apple-system, "Helvetica Neue", Arial, sans-serif`;

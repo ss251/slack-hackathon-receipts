@@ -1,0 +1,340 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        #root { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 0%, #4A154B 0%, #160a18 70%); overflow: hidden;
+                font-family: "Lato", sans-serif; }
+        /* ---------- background layer ---------- */
+        .glow { position: absolute; left: 62%; top: 8%; width: 1050px; height: 800px; margin-left: -525px;
+                background: radial-gradient(closest-side, rgba(46,182,125,0.14), rgba(46,182,125,0) 72%); }
+        .ghost { position: absolute; left: -170px; bottom: -230px; font-size: 660px; line-height: 1; opacity: 0.08; transform: rotate(9deg); }
+        .grain { position: absolute; inset: -60px; opacity: 0.10; pointer-events: none;
+                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"); }
+        .metaTL, .metaTR { position: absolute; top: 22px; font-family: "Space Mono", monospace; font-size: 18px;
+                letter-spacing: 0.13em; color: rgba(255,255,255,0.48); }
+        .metaTL { left: 60px; } .metaTR { right: 60px; color: rgba(66,212,146,0.8); }
+        .rule { position: absolute; top: 56px; left: 60px; right: 60px; height: 1px; background: rgba(255,255,255,0.09); transform-origin: left center; }
+
+        /* ---------- the Slack window ---------- */
+        .win { position: absolute; left: 190px; top: 64px; width: 1540px; height: 784px; border-radius: 16px; overflow: hidden;
+               background: #1A1D21; box-shadow: 0 40px 90px -20px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.07); }
+        .chrome { height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #221226;
+                  border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dotr { width: 12px; height: 12px; border-radius: 99px; }
+        .urlpill { margin: 0 auto; height: 25px; border-radius: 8px; background: #160a18; color: #A892B3;
+                   font-family: "Space Mono", monospace; font-size: 14px; display: flex; align-items: center; padding: 0 14px; }
+        .winbody { position: relative; width: 1540px; height: 740px; display: flex; }
+        /* sidebar */
+        .side { width: 300px; height: 100%; background: #19171D; border-right: 1px solid #2C2D30; padding: 20px 0; flex: none; }
+        .ws { font-family: "Lato", sans-serif; font-weight: 900; font-size: 24px; color: #fff; padding: 0 22px 16px; }
+        .sect { font-size: 17px; color: #8D8B91; padding: 12px 22px 6px; letter-spacing: 0.03em; }
+        .chan { font-size: 21px; padding: 8px 22px; color: #ABABAD; display: flex; gap: 9px; align-items: center; }
+        .chan.active { background: #1164A3; color: #fff; }
+        .chan .pfx { opacity: 0.75; }
+        /* main column */
+        .maincol { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .hdr { height: 62px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 28px; border-bottom: 1px solid #2C2D30; }
+        .hdr .t { font-weight: 900; font-size: 24px; color: #fff; }
+        .hdr .topic { font-size: 17px; color: #8D8B91; overflow: hidden; white-space: nowrap; }
+        .feedview { position: relative; flex: 1; overflow: hidden; }
+        .thread { position: absolute; left: 0; top: 0; width: 100%; padding: 0 30px; box-sizing: border-box; }
+        .slot { overflow: visible; }
+        .msg { display: flex; gap: 14px; }
+        .av { width: 42px; height: 42px; border-radius: 9px; flex: none; display: flex; align-items: center; justify-content: center;
+              font-family: "Lato", sans-serif; font-weight: 900; font-size: 17px; color: #fff; }
+        .mb { min-width: 0; }
+        .nrow { display: flex; align-items: baseline; gap: 9px; }
+        .nm { font-weight: 900; font-size: 21px; color: #fff; }
+        .badge { font-size: 12px; font-weight: 700; color: #ABABAD; background: rgba(255,255,255,0.09); border-radius: 3px; padding: 1px 5px; letter-spacing: 0.03em; }
+        .ts { font-size: 14px; color: #8D8B91; }
+        .tx { font-size: 22px; line-height: 1.42; color: #D1D2D3; max-width: 1080px; }
+        .mention { color: #1D9BD1; background: rgba(29,155,209,0.13); border-radius: 4px; padding: 0 5px; }
+        .code { font-family: "JetBrains Mono", monospace; font-size: 19px; background: #232529; border: 1px solid #33363b;
+                border-radius: 4px; padding: 1px 6px; color: #E8912D; }
+        .divider { display: flex; align-items: center; gap: 16px; padding: 8px 0; }
+        .divider .ln { flex: 1; height: 1px; background: #2C2D30; }
+        .divider .lb { font-family: "Space Mono", monospace; font-size: 15px; color: #8D8B91; letter-spacing: 0.1em; }
+        /* receipt card */
+        .rcard { position: relative; border: 1px solid #2C2D30; border-left: 4px solid #2EB67D; border-radius: 10px;
+                 background: #222528; padding: 18px 22px 16px; max-width: 1010px; }
+        .rc-q { font-size: 20px; color: #D1D2D3; line-height: 1.4; }
+        .rc-q b { color: #fff; }
+        .rc-quote { border-left: 3px solid #565856; padding: 6px 0 6px 14px; margin: 12px 0 2px; font-size: 22px; line-height: 1.45; color: #fff; }
+        .rc-meta { font-size: 17px; color: #9A9B9E; font-style: italic; margin-top: 10px; }
+        .rc-meta .ok { color: #2EB67D; font-style: normal; }
+        #eng-count2, #eng-count { display: inline-block; }
+        .rc-jump { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; border: 1px solid #565856;
+                   border-radius: 7px; padding: 7px 14px; font-size: 18px; font-weight: 700; color: #D1D2D3; background: #1A1D21; }
+        .ring { position: absolute; inset: -7px; border: 2px solid rgba(66,212,146,0.9); border-radius: 13px;
+                box-shadow: 0 0 26px rgba(46,182,125,0.45); pointer-events: none; }
+        /* typing indicator (floats above composer — real Slack behavior) */
+        .typing { position: absolute; left: 30px; bottom: 6px; display: flex; gap: 10px; align-items: center; }
+        .typing .lb { font-size: 16px; color: #8D8B91; font-style: italic; }
+        .typing i { display: block; width: 8px; height: 8px; border-radius: 99px; background: #8E8E8E; }
+        /* composer */
+        .composer { flex: none; margin: 6px 28px 18px; border: 1px solid #565856; border-radius: 10px; background: #222529; padding: 12px 16px 10px; }
+        .cline { display: flex; align-items: center; min-height: 30px; font-size: 21px; color: #D1D2D3; }
+        .cline .ph { color: #8D8B91; }
+        .cline .typed span { opacity: 0; }
+        .caret { display: inline-block; width: 2px; height: 24px; background: #D1D2D3; margin-left: 1px; vertical-align: -4px; }
+        .ctools { display: flex; gap: 16px; margin-top: 8px; align-items: center; }
+        .ctools .ic { width: 20px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.10); }
+        .sendbtn { margin-left: auto; width: 34px; height: 26px; border-radius: 5px; background: #007a5a; display: flex; align-items: center;
+                   justify-content: center; color: #fff; font-size: 14px; }
+        /* caption band */
+        .band { position: absolute; left: 150px; right: 150px; top: 872px; height: 190px; }
+        .cap { position: absolute; inset: 0; opacity: 0; }
+        .kick { font-family: "Space Mono", monospace; font-size: 21px; font-weight: 700; letter-spacing: 0.14em; color: #2EB67D; }
+        .head { font-family: "Archivo Black", sans-serif; font-size: 58px; color: #fff; letter-spacing: -0.5px; line-height: 1.06; margin-top: 12px; }
+        .head .g { color: #42D492; }
+        .subc { font-family: "Lato", sans-serif; font-size: 26px; color: rgba(255,255,255,0.66); margin-top: 10px; }
+        .subc b { color: #fff; font-weight: 700; }
+        .subc .mono { font-family: "Space Mono", monospace; font-size: 22px; }
+      </style>
+
+      <div id="root" data-composition-id="eng" data-width="1920" data-height="1080" data-duration="42">
+        <div class="glow" id="eng-glow"></div>
+        <div class="ghost">🧾</div>
+        <div class="grain"></div>
+        <div class="metaTL">RECEIPTS · DEMO REEL</div>
+        <div class="metaTR" id="eng-tr">EXHIBIT A — #ENGINEERING</div>
+        <div class="rule" id="eng-rule"></div>
+
+        <div class="win" id="eng-win">
+          <div class="chrome">
+            <div class="dotr" style="background:#ff5f57"></div><div class="dotr" style="background:#febc2e"></div><div class="dotr" style="background:#28c840"></div>
+            <div class="urlpill">🔒&nbsp; app.slack.com/client/E0BF8LD0BC1/C0BG177PNE4</div>
+            <div style="width:36px"></div>
+          </div>
+          <div class="winbody">
+            <div class="side">
+              <div class="ws">Receipts ▾</div>
+              <div class="sect">Channels</div>
+              <div class="chan"><span class="pfx">#</span> general</div>
+              <div class="chan"><span class="pfx">#</span> random</div>
+              <div class="chan active"><span class="pfx">🔒</span> engineering</div>
+              <div class="chan" style="opacity:.55"><span class="pfx">🔒</span> leadership-exec</div>
+              <div class="sect" style="margin-top:14px">Agents &amp; apps</div>
+              <div class="chan"><span class="pfx">🧾</span> Receipts</div>
+            </div>
+            <div class="maincol">
+              <div class="hdr"><div class="t">🔒 engineering</div><div class="topic">v3 release · migrations · the usual chaos</div></div>
+              <div class="feedview">
+                <div class="thread" id="eng-thread"></div>
+                <div class="typing" id="eng-typing" style="opacity:0">
+                  <span class="lb">Receipts is pulling the receipt…</span><i id="eng-d1"></i><i id="eng-d2"></i><i id="eng-d3"></i>
+                </div>
+              </div>
+              <div class="composer" id="eng-composer">
+                <div class="cline">
+                  <span class="ph" id="eng-ph">Message 🔒 engineering</span><span class="typed" id="eng-typed"></span><span class="caret" id="eng-caret" style="opacity:0"></span>
+                </div>
+                <div class="ctools"><div class="ic"></div><div class="ic"></div><div class="ic"></div><div class="sendbtn" id="eng-send">➤</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="cap" id="eng-cap1">
+            <div class="kick">THE PROBLEM</div>
+            <div class="head">Decisions get made in Slack — then <span class="g">re-litigated.</span></div>
+            <div class="subc">Three weeks later, nobody can find where it landed.</div>
+          </div>
+          <div class="cap" id="eng-cap2">
+            <div class="kick">SUMMON IT</div>
+            <div class="head"><span class="g">@Receipts</span> did we decide to drop Node 18?</div>
+            <div class="subc">Ask right in the thread — where the argument is happening.</div>
+          </div>
+          <div class="cap" id="eng-cap3">
+            <div class="kick">THE RECEIPT</div>
+            <div class="head">Verbatim. Attributed. <span class="g">One jump-link away.</span></div>
+            <div class="subc">The real decision — not a summary. <b>Receipts, not vibes.</b></div>
+          </div>
+          <div class="cap" id="eng-cap4">
+            <div class="kick">REPEAT QUESTIONS</div>
+            <div class="head">It counts how often it was asked. <span class="g">The FAQ writes itself.</span></div>
+            <div class="subc">Maintainers stop re-typing the same answer forever.</div>
+          </div>
+          <div class="cap" id="eng-cap5">
+            <div class="kick">PERMISSION-AWARE</div>
+            <div class="head">A channel you can’t see? <span class="g">It finds nothing.</span></div>
+            <div class="subc">Receipts searches <b>as you</b> — live, via Slack’s <span class="mono">Real-Time Search API</span>.</div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          // ---------- build the thread (synchronous DOM construction) ----------
+          const AV = {
+            sam:   ["SR", "#7C5CBF"], priya: ["PN", "#B3623A"], dana: ["DO", "#2E8FBF"],
+            leo:   ["LP", "#5B8A3C"], you:   ["SS", "#C24A6E"], app:  ["🧾", "#2EB67D"],
+          };
+          const msg = (who, name, ts, html, app) =>
+            `<div class="msg"><div class="av" style="background:${AV[who][1]}">${AV[who][0]}</div>
+             <div class="mb"><div class="nrow"><span class="nm">${name}</span>${app ? '<span class="badge">APP</span>' : ""}<span class="ts">${ts}</span></div>
+             <div class="tx">${html}</div></div></div>`;
+
+          const CARD1 = `
+            <div class="msg"><div class="av" style="background:${AV.app[1]}">🧾</div>
+            <div class="mb"><div class="nrow"><span class="nm">Receipts</span><span class="badge">APP</span><span class="ts">10:41 AM</span></div>
+            <div class="rcard" id="eng-card1">
+              <div class="ring" id="eng-ring1" style="opacity:0"></div>
+              <div class="rc-q" id="eng-c1q">🧾 <b>Receipts</b> — here’s the prior decision by <b>@Dana Okafor</b> in 🔒 engineering · <b>Jul 5, 2026</b>:</div>
+              <div class="rc-quote" id="eng-c1quote">📌 Decision: we’re dropping Node 18 support in v3. It’s EOL’d upstream — anyone still on it should pin v2. This is final.</div>
+              <div class="rc-meta" id="eng-c1meta"><span id="eng-count">asked &amp; answered 1×</span> · searched as you (permission-aware) · <span class="ok">✅ what’s changed since: nothing</span></div>
+              <div class="rc-jump" id="eng-c1jump">↪ Jump to message</div>
+            </div></div></div>`;
+
+          const CARD2 = `
+            <div class="msg"><div class="av" style="background:${AV.app[1]}">🧾</div>
+            <div class="mb"><div class="nrow"><span class="nm">Receipts</span><span class="badge">APP</span><span class="ts">10:42 AM</span></div>
+            <div class="rcard" id="eng-card2">
+              <div class="rc-q">🧾 Prior answer by <b>@Dana Okafor</b> · <b>Jul 5, 2026</b>:</div>
+              <div class="rc-quote"><span class="code">bun run migrate:local</span> after you pull — just make sure DATABASE_URL is set in your .env</div>
+              <div class="rc-meta"><span id="eng-count2">asked &amp; answered 3×</span> · searched as you · <span class="ok">✅ unchanged</span></div>
+            </div></div></div>`;
+
+          // [height, html] — fixed slot heights keep the scroll math deterministic
+          const ITEMS = [
+            [116, msg("sam", "Sam Rivera", "9:58 AM", "heads up — Node 18 hit end-of-life upstream last week, and we’re still shipping it in the v3 build.")],
+            [82,  msg("priya", "Priya Nair", "9:59 AM", "that’s a real problem, no more security patches. are we dropping it?")],
+            [150, msg("dana", "Dana Okafor", "10:07 AM", "📌 <b style='color:#fff'>Decision: we’re dropping Node 18 support in v3.</b> It’s EOL’d upstream — anyone still on it should pin v2. Confirmed with platform, this is final.")],
+            [64,  `<div class="divider"><div class="ln"></div><div class="lb">THREE WEEKS LATER</div><div class="ln"></div></div>`],
+            [116, msg("leo", "Leo Park", "10:38 AM", "quick q — are we keeping Node 18 for the v3 release or not? saw a PR still targeting it")],
+            [82,  msg("priya", "Priya Nair", "10:39 AM", "wait didn’t we already settle this? I can never find where these decisions land 😩")],
+            [82,  msg("you", "Sailesh Sivakumar", "10:41 AM", `<span class="mention">@Receipts</span> did we decide to drop Node 18?`)],
+            [286, CARD1],
+            [82,  msg("you", "Sailesh Sivakumar", "10:42 AM", `<span class="mention">@Receipts</span> how do I run the migrations locally?`)],
+            [222, CARD2],
+            [82,  msg("you", "Sailesh Sivakumar", "10:44 AM", `<span class="mention">@Receipts</span> what did we decide about our analytics vendor?`)],
+            [110, msg("app", "Receipts", "10:44 AM", "🔍 I searched what you can see for <b style='color:#fff'>analytics vendor</b> — no prior decision on record. This might be a fresh one.", true)],
+          ];
+          const thread = document.getElementById("eng-thread");
+          const cum = []; let acc = 14; // top padding
+          ITEMS.forEach(([h, html], i) => {
+            const d = document.createElement("div");
+            d.className = "slot"; d.id = "eng-s" + i; d.style.height = h + "px";
+            d.innerHTML = html; thread.appendChild(d);
+            acc += h; cum.push(acc);
+          });
+          const VIEW = 526; // feedview height ≈ 740 - hdr 62 - composer ~152
+          const yAt = (i) => VIEW - cum[i] - 6; // bottom-anchored: last message rests just above the composer
+
+          // composer typed text -> spans
+          const SUMMON = "@Receipts did we decide to drop Node 18?";
+          const typed = document.getElementById("eng-typed");
+          SUMMON.split("").forEach((ch) => { const s = document.createElement("span"); s.textContent = ch; typed.appendChild(s); });
+
+          // ---------- timeline ----------
+          const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+          const POP = { y: 24, opacity: 0, scale: 0.98 };
+          const popIn = (sel, t, dur = 0.42) =>
+            tl.fromTo(sel, POP, { y: 0, opacity: 1, scale: 1, duration: dur, ease: "power3.out", transformOrigin: "0% 100%" }, t);
+          const scroll = (i, t, dur = 0.5) => tl.to("#eng-thread", { y: yAt(i), duration: dur, ease: "power2.inOut" }, t);
+          // hide all slots initially (revealed per beat)
+          tl.set(".slot", { opacity: 0 }, 0);
+          tl.set("#eng-thread", { y: yAt(0) }, 0); // first message rests at the bottom, like a live channel
+
+          // scene entrance (0 — 0.8): root fades (crossfade from intro), window rises
+          tl.fromTo("#root", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 0);
+          tl.fromTo("#eng-win", { y: 46, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }, 0.1);
+          tl.fromTo("#eng-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.2);
+          tl.fromTo(".metaTL", { opacity: 0, x: -14 }, { opacity: 0.9, x: 0, duration: 0.5 }, 0.3);
+          tl.fromTo("#eng-tr", { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.5 }, 0.4);
+          tl.fromTo("#eng-glow", { scale: 0.94 }, { scale: 1.05, duration: 2.6, ease: "sine.inOut", yoyo: true, repeat: 7 }, 0);
+
+          // ---------- P1: the pain (1.0 — 8.6) ----------
+          const showCap = (id, t) => tl.fromTo(id, { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, t);
+          const hideCap = (id, t) => tl.to(id, { opacity: 0, y: -14, duration: 0.35, ease: "power2.in" }, t);
+          showCap("#eng-cap1", 0.9);
+          popIn("#eng-s0", 1.0); scroll(0, 1.0);
+          popIn("#eng-s1", 1.9); scroll(1, 1.9);
+          popIn("#eng-s2", 2.9); scroll(2, 2.9);
+          // flash the decision line green briefly (it matters later)
+          tl.fromTo("#eng-s2 .tx", { backgroundColor: "rgba(46,182,125,0.0)" }, { backgroundColor: "rgba(46,182,125,0.14)", duration: 0.4, ease: "sine.inOut", yoyo: true, repeat: 1 }, 3.5);
+          popIn("#eng-s3", 4.7, 0.5); scroll(3, 4.7);
+          popIn("#eng-s4", 5.7); scroll(4, 5.7);
+          popIn("#eng-s5", 6.6); scroll(5, 6.6);
+          hideCap("#eng-cap1", 8.5);
+
+          // ---------- P2: the summon (8.8 — 13.9) ----------
+          showCap("#eng-cap2", 8.9);
+          tl.to("#eng-ph", { opacity: 0, duration: 0.25 }, 8.8);
+          tl.fromTo("#eng-composer", { borderColor: "#565856" }, { borderColor: "#2EB67D", duration: 0.4 }, 8.8);
+          tl.fromTo("#eng-caret", { opacity: 0 }, { opacity: 1, duration: 0.05 }, 8.85);
+          tl.fromTo("#eng-caret", { opacity: 1 }, { opacity: 0, duration: 0.42, ease: "steps(1)", yoyo: true, repeat: 5 }, 8.9);
+          tl.fromTo("#eng-typed span", { opacity: 0 }, { opacity: 1, duration: 0.02, stagger: 0.052 }, 9.0);
+          // send: button pulse, input clears, summon pops into thread
+          tl.fromTo("#eng-send", { scale: 1 }, { scale: 0.82, duration: 0.09, yoyo: true, repeat: 1, ease: "power2.in" }, 11.6);
+          tl.to("#eng-typed span", { opacity: 0, duration: 0.12 }, 11.75);
+          tl.to("#eng-caret", { opacity: 0, duration: 0.05 }, 11.75);
+          tl.fromTo("#eng-ph", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 12.0);
+          tl.to("#eng-composer", { borderColor: "#565856", duration: 0.4 }, 12.0);
+          popIn("#eng-s6", 11.9); scroll(6, 11.9);
+          hideCap("#eng-cap2", 13.9);
+
+          // ---------- P3: the receipt (12.6 — 22.6) ----------
+          // typing indicator floats under the feed
+          tl.fromTo("#eng-typing", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35 }, 12.6);
+          [1, 2, 3].forEach((n, i) =>
+            tl.fromTo("#eng-d" + n, { opacity: 0.25, scale: 0.8 }, { opacity: 1, scale: 1.15, duration: 0.3, ease: "sine.inOut", yoyo: true, repeat: 5, repeatDelay: 0.12 }, 12.8 + i * 0.14));
+          tl.to("#eng-typing", { opacity: 0, y: 6, duration: 0.25 }, 14.5);
+          // the card lands — container pops, parts assemble
+          popIn("#eng-s7", 14.7, 0.5); scroll(7, 14.7, 0.55);
+          tl.fromTo("#eng-card1", { scale: 0.965 }, { scale: 1, duration: 0.55, ease: "back.out(1.4)", transformOrigin: "0% 0%" }, 14.7);
+          tl.fromTo("#eng-c1q",     { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.35 }, 14.85);
+          tl.fromTo("#eng-c1quote", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" }, 15.15);
+          tl.fromTo("#eng-c1meta",  { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4 }, 15.55);
+          // count-up 1× -> 3×
+          (function () {
+            const el = () => document.getElementById("eng-count");
+            const proxy = { n: 1 };
+            tl.to(proxy, { n: 3, duration: 0.7, ease: "steps(2)", onUpdate: () => { el().textContent = "asked & answered " + Math.round(proxy.n) + "×"; } }, 15.9);
+          })();
+          tl.fromTo("#eng-c1jump", { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 0.45, ease: "back.out(2)", transformOrigin: "0% 50%" }, 16.35);
+          // evidence ring pulse
+          tl.fromTo("#eng-ring1", { opacity: 0 }, { opacity: 1, duration: 0.35 }, 16.9);
+          tl.to("#eng-ring1", { opacity: 0.35, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 3 }, 17.3);
+          tl.to("#eng-ring1", { opacity: 0, duration: 0.4 }, 21.6);
+          // camera: push toward the card, hold, release
+          tl.to("#eng-win", { scale: 1.11, x: -36, y: -44, duration: 1.0, ease: "power2.inOut" }, 14.8);
+          tl.to("#eng-win", { scale: 1.0, x: 0, y: 0, duration: 0.9, ease: "power2.inOut" }, 21.7);
+          showCap("#eng-cap3", 14.6);
+          hideCap("#eng-cap3", 22.6);
+
+          // ---------- P4: the deflect (23.0 — 29.6) ----------
+          showCap("#eng-cap4", 23.2);
+          popIn("#eng-s8", 23.1); scroll(8, 23.1);
+          tl.fromTo("#eng-typing", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3 }, 23.7);
+          tl.to("#eng-typing", { opacity: 0, duration: 0.2 }, 24.7);
+          popIn("#eng-s9", 24.9, 0.5); scroll(9, 24.9, 0.55);
+          tl.fromTo("#eng-card2", { scale: 0.965 }, { scale: 1, duration: 0.5, ease: "back.out(1.4)", transformOrigin: "0% 0%" }, 24.9);
+          // emphasize the 3× counter
+          tl.fromTo("#eng-count2", { color: "#9A9B9E" }, { color: "#42D492", duration: 0.5, ease: "sine.inOut" }, 25.8);
+          tl.fromTo("#eng-count2", { scale: 1 }, { scale: 1.12, duration: 0.3, yoyo: true, repeat: 1, ease: "power2.inOut", transformOrigin: "0% 50%" }, 25.8);
+          tl.to("#eng-win", { scale: 1.07, x: -22, y: -30, duration: 0.9, ease: "power2.inOut" }, 25.0);
+          tl.to("#eng-win", { scale: 1.0, x: 0, y: 0, duration: 0.8, ease: "power2.inOut" }, 28.6);
+          hideCap("#eng-cap4", 29.6);
+
+          // ---------- P5: permission-aware (30.0 — 42.0) ----------
+          showCap("#eng-cap5", 30.2);
+          popIn("#eng-s10", 30.1); scroll(10, 30.1);
+          tl.fromTo("#eng-typing", { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.3 }, 30.8);
+          tl.to("#eng-typing", { opacity: 0, duration: 0.2 }, 32.2);
+          popIn("#eng-s11", 32.5, 0.5); scroll(11, 32.5, 0.55);
+          // sidebar: the locked channel glints — the setup for the kicker
+          tl.fromTo(".chan[style*='opacity']", { backgroundColor: "rgba(46,182,125,0)" }, { backgroundColor: "rgba(46,182,125,0.16)", duration: 0.6, ease: "sine.inOut", yoyo: true, repeat: 3 }, 35.0);
+          tl.to("#eng-win", { scale: 1.05, x: 30, y: 6, duration: 1.0, ease: "power2.inOut" }, 34.8); // lean toward sidebar
+          tl.to("#eng-win", { scale: 1.0, x: 0, y: 0, duration: 0.9, ease: "power2.inOut" }, 39.6);
+
+          window.__timelines["eng"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

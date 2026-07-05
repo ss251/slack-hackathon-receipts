@@ -1,7 +1,6 @@
 import { Composition } from "remotion";
-import { ReceiptsDemo } from "./ReceiptsDemo";
+import { ReceiptsDemo, TOTAL } from "./ReceiptsDemo";
 import { FPS, W, H } from "./theme";
 export const RemotionRoot: React.FC = () => (
-  <Composition id="ReceiptsDemo" component={ReceiptsDemo}
-    durationInFrames={1790} fps={FPS} width={W} height={H} />
+  <Composition id="ReceiptsDemo" component={ReceiptsDemo} durationInFrames={TOTAL} fps={FPS} width={W} height={H} />
 );

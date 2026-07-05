@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        #root { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 0%, #4A154B 0%, #160a18 70%); overflow: hidden;
+                font-family: "Lato", sans-serif; }
+        .glow { position: absolute; left: 40%; top: 10%; width: 1050px; height: 800px; margin-left: -525px;
+                background: radial-gradient(closest-side, rgba(46,182,125,0.15), rgba(46,182,125,0) 72%); }
+        .ghost { position: absolute; right: -150px; top: -170px; font-size: 600px; line-height: 1; opacity: 0.08; transform: rotate(-8deg); }
+        .grain { position: absolute; inset: -60px; opacity: 0.10; pointer-events: none;
+                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"); }
+        .metaTL, .metaTR { position: absolute; top: 22px; font-family: "Space Mono", monospace; font-size: 18px;
+                letter-spacing: 0.13em; color: rgba(255,255,255,0.48); }
+        .metaTL { left: 60px; } .metaTR { right: 60px; color: rgba(66,212,146,0.8); }
+        .rule { position: absolute; top: 56px; left: 60px; right: 60px; height: 1px; background: rgba(255,255,255,0.09); transform-origin: left center; }
+
+        .win { position: absolute; left: 190px; top: 64px; width: 1540px; height: 784px; border-radius: 16px; overflow: hidden;
+               background: #1A1D21; box-shadow: 0 40px 90px -20px rgba(0,0,0,0.65), 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.07); }
+        .chrome { height: 44px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #221226; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .dotr { width: 12px; height: 12px; border-radius: 99px; }
+        .urlpill { margin: 0 auto; height: 25px; border-radius: 8px; background: #160a18; color: #A892B3;
+                   font-family: "Space Mono", monospace; font-size: 14px; display: flex; align-items: center; padding: 0 14px; }
+        .winbody { position: relative; width: 1540px; height: 740px; display: flex; }
+        .side { width: 300px; height: 100%; background: #19171D; border-right: 1px solid #2C2D30; padding: 20px 0; flex: none; }
+        .ws { font-weight: 900; font-size: 24px; color: #fff; padding: 0 22px 16px; }
+        .sect { font-size: 17px; color: #8D8B91; padding: 12px 22px 6px; }
+        .chan { font-size: 21px; padding: 8px 22px; color: #ABABAD; display: flex; gap: 9px; align-items: center; }
+        .chan.active { background: #1164A3; color: #fff; }
+        .maincol { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .hdr { height: 62px; flex: none; display: flex; align-items: center; gap: 12px; padding: 0 28px; border-bottom: 1px solid #2C2D30; }
+        .hdr .t { font-weight: 900; font-size: 24px; color: #fff; }
+        .hdr .lockchip { font-family: "Space Mono", monospace; font-size: 15px; color: #E8912D; background: rgba(232,145,45,0.12);
+                         border: 1px solid rgba(232,145,45,0.35); border-radius: 6px; padding: 3px 10px; letter-spacing: 0.08em; }
+        .feed { flex: 1; padding: 26px 30px; display: flex; flex-direction: column; justify-content: flex-end; gap: 20px; }
+        .sysline { font-size: 18px; color: #8D8B91; font-style: italic; }
+        .intro { margin-bottom: 26px; }
+        .intro-emoji { font-size: 54px; }
+        .intro-t { font-size: 27px; font-weight: 900; color: #fff; margin-top: 10px; }
+        .intro-t b { color: #fff; }
+        .intro-s { font-size: 19px; color: #8D8B91; margin-top: 6px; }
+        .msg { display: flex; gap: 14px; }
+        .av { width: 42px; height: 42px; border-radius: 9px; flex: none; display: flex; align-items: center; justify-content: center;
+              font-weight: 900; font-size: 17px; color: #fff; }
+        .nrow { display: flex; align-items: baseline; gap: 9px; }
+        .nm { font-weight: 900; font-size: 21px; color: #fff; }
+        .badge { font-size: 12px; font-weight: 700; color: #ABABAD; background: rgba(255,255,255,0.09); border-radius: 3px; padding: 1px 5px; }
+        .ts { font-size: 14px; color: #8D8B91; }
+        .tx { font-size: 22px; line-height: 1.45; color: #D1D2D3; max-width: 1060px; }
+        .decision-wrap { position: relative; display: inline-block; max-width: 1060px; }
+        .ring { position: absolute; inset: -10px -14px; border: 2px solid rgba(66,212,146,0.9); border-radius: 12px;
+                box-shadow: 0 0 26px rgba(46,182,125,0.45); pointer-events: none; }
+        .evchip { position: absolute; right: -6px; top: -46px; font-family: "Space Mono", monospace; font-size: 15px; letter-spacing: 0.1em;
+                  color: #42D492; background: rgba(46,182,125,0.12); border: 1px solid rgba(46,182,125,0.4); border-radius: 6px; padding: 5px 12px; }
+        .composer { flex: none; margin: 6px 28px 18px; border: 1px solid #565856; border-radius: 10px; background: #222529; padding: 12px 16px 10px; }
+        .cline { min-height: 30px; font-size: 21px; color: #8D8B91; }
+        .ctools { display: flex; gap: 16px; margin-top: 8px; align-items: center; }
+        .ctools .ic { width: 20px; height: 20px; border-radius: 4px; background: rgba(255,255,255,0.10); }
+
+        .band { position: absolute; left: 150px; right: 150px; top: 872px; height: 190px; }
+        .kick { font-family: "Space Mono", monospace; font-size: 21px; font-weight: 700; letter-spacing: 0.14em; color: #2EB67D; }
+        .head { font-family: "Archivo Black", sans-serif; font-size: 58px; color: #fff; letter-spacing: -0.5px; line-height: 1.06; margin-top: 12px; }
+        .head .g { color: #42D492; }
+        .subc { font-family: "Lato", sans-serif; font-size: 26px; color: rgba(255,255,255,0.66); margin-top: 10px; }
+        .subc b { color: #fff; }
+      </style>
+
+      <div id="root" data-composition-id="lead" data-width="1920" data-height="1080" data-duration="9.5">
+        <div class="glow" id="ld-glow"></div>
+        <div class="ghost">🔒</div>
+        <div class="grain"></div>
+        <div class="metaTL">RECEIPTS · DEMO REEL</div>
+        <div class="metaTR">EXHIBIT B — #LEADERSHIP-EXEC</div>
+        <div class="rule" id="ld-rule"></div>
+
+        <div class="win" id="ld-win">
+          <div class="chrome">
+            <div class="dotr" style="background:#ff5f57"></div><div class="dotr" style="background:#febc2e"></div><div class="dotr" style="background:#28c840"></div>
+            <div class="urlpill">🔒&nbsp; app.slack.com/client/E0BF8LD0BC1/C0BERUSV38F</div>
+            <div style="width:36px"></div>
+          </div>
+          <div class="winbody">
+            <div class="side">
+              <div class="ws">Receipts ▾</div>
+              <div class="sect">Channels</div>
+              <div class="chan"><span>#</span> general</div>
+              <div class="chan"><span>#</span> random</div>
+              <div class="chan"><span>🔒</span> engineering</div>
+              <div class="chan active" id="ld-chan"><span>🔒</span> leadership-exec</div>
+            </div>
+            <div class="maincol">
+              <div class="hdr"><div class="t">🔒 leadership-exec</div><div class="lockchip" id="ld-chip">PRIVATE · YOU WERE NEVER HERE</div></div>
+              <div class="feed">
+                <div class="intro" id="ld-intro">
+                  <div class="intro-emoji">🔒</div>
+                  <div class="intro-t">This is the very beginning of <b>#leadership-exec</b></div>
+                  <div class="intro-s">The stuff you don’t announce yet. Private — invite only. Created by Dana Okafor.</div>
+                </div>
+                <div class="sysline" id="ld-sys">🧾 Receipts joined #leadership-exec</div>
+                <div class="msg" id="ld-m1">
+                  <div class="av" style="background:#2E8FBF">DO</div>
+                  <div>
+                    <div class="nrow"><span class="nm">Dana Okafor</span><span class="badge">APP</span><span class="ts">10:19 AM</span></div>
+                    <div class="decision-wrap">
+                      <div class="ring" id="ld-ring" style="opacity:0"></div>
+                      <div class="evchip" id="ld-ev" style="opacity:0">HIDDEN FROM #ENGINEERING — CORRECTLY</div>
+                      <div class="tx">📌 <b style="color:#fff">Decision: we’re moving analytics off Amplitude to Mixpanel</b> — finance approved the budget. Rolling out next quarter. Keeping this in #leadership until the team announce.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="msg" id="ld-m2">
+                  <div class="av" style="background:#5F8A5B">MW</div>
+                  <div>
+                    <div class="nrow"><span class="nm">Marcus Webb</span><span class="badge">APP</span><span class="ts">10:19 AM</span></div>
+                    <div class="tx">👍 signed off from finance side. let’s keep it quiet until contracts are countersigned.</div>
+                  </div>
+                </div>
+              </div>
+              <div class="composer"><div class="cline">Message 🔒 leadership-exec</div>
+                <div class="ctools"><div class="ic"></div><div class="ic"></div><div class="ic"></div></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="kick" id="ld-kick">THE KICKER</div>
+          <div class="head" id="ld-head">It was <span class="g">right there</span> — in a private channel.</div>
+          <div class="subc" id="ld-sub">A bot that indexes everything would have leaked it. <b>Receipts structurally can’t.</b></div>
+        </div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+          // entrance: crossfade root in over eng, window slides from right (topic-change energy)
+          tl.fromTo("#root", { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power1.inOut" }, 0);
+          tl.fromTo("#ld-win", { x: 90, opacity: 0 }, { x: 0, opacity: 1, duration: 0.65, ease: "power3.out" }, 0.1);
+          tl.fromTo("#ld-rule", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.15);
+          tl.fromTo(".metaTL", { opacity: 0, x: -14 }, { opacity: 0.9, x: 0, duration: 0.5 }, 0.25);
+          tl.fromTo(".metaTR", { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.5 }, 0.3);
+          tl.fromTo("#ld-glow", { scale: 0.94 }, { scale: 1.05, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: 3 }, 0);
+          // channel highlight pulses — you're INSIDE the hidden place now
+          tl.fromTo("#ld-chan", { backgroundColor: "rgba(17,100,163,1)" }, { backgroundColor: "rgba(46,182,125,0.55)", duration: 0.5, yoyo: true, repeat: 1, ease: "sine.inOut" }, 0.8);
+          tl.fromTo("#ld-chip", { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.45 }, 0.9);
+          // content pops
+          tl.fromTo("#ld-intro", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5 }, 0.55);
+          tl.fromTo("#ld-sys", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.4 }, 0.7);
+          tl.fromTo("#ld-m1", { opacity: 0, y: 22, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out", transformOrigin: "0% 100%" }, 1.0);
+          tl.fromTo("#ld-m2", { opacity: 0, y: 22, scale: 0.985 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power3.out", transformOrigin: "0% 100%" }, 1.5);
+          // the evidence moment
+          tl.fromTo("#ld-ring", { opacity: 0 }, { opacity: 1, duration: 0.4 }, 2.2);
+          tl.to("#ld-ring", { opacity: 0.4, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 5 }, 2.6);
+          tl.fromTo("#ld-ev", { opacity: 0, y: 10, scale: 0.85 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.8)", transformOrigin: "100% 100%" }, 2.7);
+          // camera: slow dramatic push onto the decision
+          tl.to("#ld-win", { scale: 1.09, x: -6, y: -26, duration: 1.4, ease: "power2.inOut" }, 2.2);
+          tl.to("#ld-win", { scale: 1.04, y: -14, duration: 3.6, ease: "sine.out" }, 3.8);
+          // caption
+          tl.fromTo("#ld-kick", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.45 }, 1.9);
+          tl.fromTo("#ld-head", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 2.05);
+          tl.fromTo("#ld-sub", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5 }, 2.35);
+          window.__timelines["lead"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

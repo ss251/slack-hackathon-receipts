@@ -7,10 +7,12 @@
     "preview": "remotion studio"
   },
   "dependencies": {
+    "@remotion/cli": "4.0.484",
+    "@remotion/fonts": "4.0.484",
+    "@remotion/transitions": "4.0.484",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "remotion": "4.0.484",
-    "@remotion/cli": "4.0.484"
+    "remotion": "4.0.484"
   },
   "devDependencies": {
     "@types/react": "19.2.0",

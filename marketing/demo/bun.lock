@@ -6,6 +6,8 @@
       "name": "receipts-demo",
       "dependencies": {
         "@remotion/cli": "4.0.484",
+        "@remotion/fonts": "4.0.484",
+        "@remotion/transitions": "4.0.484",
         "react": "19.2.0",
         "react-dom": "19.2.0",
         "remotion": "4.0.484",
@@ -133,15 +135,21 @@
 
     "@remotion/compositor-win32-x64-msvc": ["@remotion/compositor-win32-x64-msvc@4.0.484", "", { "os": "win32", "cpu": "x64" }, "sha512-MxTN7uCZ5zD+X7TaaYfAR4ewtH9BZ7Wh5xS+oRJ72XbNHV/d+nULtOG3VdphFo/HhaPRzTYO9i/sZjogE+In/g=="],
 
+    "@remotion/fonts": ["@remotion/fonts@4.0.484", "", { "dependencies": { "remotion": "4.0.484" } }, "sha512-KFGgUth2pAAiHI9BEHr0meNOSWqD2eHMmpUEjAfHIyKZ1nNe+iNrss8WRjZWLiGao3+DjWQ7Y+EwM73QkjytQg=="],
+
     "@remotion/licensing": ["@remotion/licensing@4.0.484", "", {}, "sha512-YtiERD4bC3n5yQtNgEZasdZXqDKjIJssjKDLL+YjGDU3mMcw/93my83UU6jJVCB7TBrIms8DVbCgqt4hhU8kMA=="],
 
     "@remotion/media-parser": ["@remotion/media-parser@4.0.484", "", {}, "sha512-OWiCDoVa7kQlLgjFsNrMTMpl3UXQQMVcj//Quqftf30S78NHiBVyuzLloMkGPshgUH+KP0ByShld+/GPbCxs8g=="],
 
     "@remotion/media-utils": ["@remotion/media-utils@4.0.484", "", { "dependencies": { "mediabunny": "1.47.0", "remotion": "4.0.484" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-VpqF5CpLPfekJmkAyH7+SMdhfReND5WdtUjbbgzxdpT1G26LfQw3Qxj6Jo38vv/Sahn+VxNb9knElOptu9fcng=="],
 
+    "@remotion/paths": ["@remotion/paths@4.0.484", "", {}, "sha512-JFJfr40lBGCcDlGHsnLbjbVjyok/Ctag4xDSeScMZr3F7frL4BL7PBzuBk8AMgEgNmVc3I3DRqGxOx8z1WVPhA=="],
+
     "@remotion/player": ["@remotion/player@4.0.484", "", { "dependencies": { "remotion": "4.0.484" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-GdlYGl+Y+9aOqHy+/5IEynt/ZGfDATUXlC5WrHegXyNCw4zFaCmfXC6FLtfZNEYOdwMLZ0drQehrdzs5qONL8w=="],
 
     "@remotion/renderer": ["@remotion/renderer@4.0.484", "", { "dependencies": { "@remotion/licensing": "4.0.484", "@remotion/streaming": "4.0.484", "execa": "5.1.1", "remotion": "4.0.484", "source-map": "0.8.0-beta.0", "ws": "8.21.0" }, "optionalDependencies": { "@remotion/compositor-darwin-arm64": "4.0.484", "@remotion/compositor-darwin-x64": "4.0.484", "@remotion/compositor-linux-arm64-gnu": "4.0.484", "@remotion/compositor-linux-arm64-musl": "4.0.484", "@remotion/compositor-linux-x64-gnu": "4.0.484", "@remotion/compositor-linux-x64-musl": "4.0.484", "@remotion/compositor-win32-x64-msvc": "4.0.484" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-dXvP4GzKono9xHFYKySb4vhQh8yYmif51WpIzTz6EWcyVGv+Blobdi1uTcoShdzD6Jr0oETAqu1ojBHCFKtYbg=="],
+
+    "@remotion/shapes": ["@remotion/shapes@4.0.484", "", { "dependencies": { "@remotion/paths": "4.0.484", "remotion": "4.0.484" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-gPEko27JbOgdSo0SqfGo24BYtpQ0sZ7KOcUwaCzxiDdUidQc5+lT6qjViKpxhJPoPuSKGA2iLuyqcgqQ1u4h6g=="],
 
     "@remotion/streaming": ["@remotion/streaming@4.0.484", "", {}, "sha512-SOiI+3sBZlfIyh7kX/w1XC4BWCy33/leNSzYTdpfgsqVFv60S6huOfvwXVEMCgGUEfsZtLbDP0LujHMMuvRO/A=="],
 
@@ -152,6 +160,8 @@
     "@remotion/studio-shared": ["@remotion/studio-shared@4.0.484", "", { "dependencies": { "remotion": "4.0.484" } }, "sha512-jGmPYfl+CuX7xtCuRP41623/R8UnK7FvAuaiWCrygh5M0dlhkpKcgms8/H8uRCQwWb/cWTUn6YOx9rkMw/rS2A=="],
 
     "@remotion/timeline-utils": ["@remotion/timeline-utils@4.0.484", "", { "dependencies": { "mediabunny": "1.47.0" } }, "sha512-WyWg84sMDhuinLvQt+UdP27sJTGfeSs6REuv2Bmf6pp/kHW12BS/rf+p4lSGMe9WwEsUL8ueQw6mezBDrF7Yqw=="],
+
+    "@remotion/transitions": ["@remotion/transitions@4.0.484", "", { "dependencies": { "@remotion/paths": "4.0.484", "@remotion/shapes": "4.0.484", "remotion": "4.0.484" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-E4MqFBxbArq7WXPeUGmWJXj5dUFqHoqbBBnF4tQI5NwIFWnqMMgvTxI3NguNzcaCCLHQbM5FhwKzqhMXFIimIQ=="],
 
     "@remotion/web-renderer": ["@remotion/web-renderer@4.0.484", "", { "dependencies": { "@mediabunny/aac-encoder": "1.47.0", "@mediabunny/flac-encoder": "1.47.0", "@mediabunny/mp3-encoder": "1.47.0", "@remotion/licensing": "4.0.484", "mediabunny": "1.47.0", "remotion": "4.0.484" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0" } }, "sha512-K5pXBabSB6Y931wiYPwoUVPzpmYqXQDplSS41bvQ/GyHnZSGgez2jWmj1W6O7GDIY2bkLE51aDwPi5hPK+2xvQ=="],
 

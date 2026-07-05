@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head><meta charset="UTF-8" /></head>
+  <body>
+    <template>
+      <style>
+        #root { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 0%, #4A154B 0%, #160a18 70%); overflow: hidden; }
+        .glow { position: absolute; left: 50%; top: 40%; width: 1300px; height: 950px; margin: -475px 0 0 -650px;
+                background: radial-gradient(closest-side, rgba(46,182,125,0.18), rgba(46,182,125,0) 72%); }
+        .grain { position: absolute; inset: -60px; opacity: 0.11; pointer-events: none;
+                 background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"); }
+        .ruleL, .ruleR { position: absolute; top: 50%; width: 220px; height: 1px; background: rgba(66,212,146,0.35); }
+        .ruleL { left: 120px; transform-origin: left center; } .ruleR { right: 120px; transform-origin: right center; }
+        .lockup { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        .emoji { font-size: 110px; line-height: 1; }
+        .title { font-family: "Archivo Black", sans-serif; font-size: 108px; color: #fff; letter-spacing: -2.5px; margin-top: 4px; }
+        .tag { font-family: "Space Mono", monospace; font-size: 26px; letter-spacing: 0.15em; color: #42D492; margin-top: 26px; }
+        .sub { font-family: "Lato", sans-serif; font-size: 25px; color: rgba(255,255,255,0.62); margin-top: 14px; }
+        .chip { font-family: "Space Mono", monospace; font-size: 19px; letter-spacing: 0.1em; color: rgba(255,255,255,0.5);
+                border: 1px solid rgba(255,255,255,0.16); background: rgba(255,255,255,0.05); border-radius: 9px; padding: 10px 24px; margin-top: 40px; }
+        .fade { position: absolute; inset: 0; background: #0b060d; opacity: 0; }
+      </style>
+
+      <div id="root" data-composition-id="outro" data-width="1920" data-height="1080" data-duration="6.5">
+        <div class="glow" id="ou-glow"></div>
+        <div class="grain"></div>
+        <div class="ruleL" id="ou-rl"></div>
+        <div class="ruleR" id="ou-rr"></div>
+        <div class="lockup">
+          <div class="emoji" id="ou-emoji">🧾</div>
+          <div class="title" id="ou-title">Receipts</div>
+          <div class="tag" id="ou-tag">PERMISSION-AWARE. NO INDEX. JUST RECEIPTS.</div>
+          <div class="sub" id="ou-sub">Built on Slack’s Real-Time Search API</div>
+          <div class="chip" id="ou-chip">SLACK AGENT BUILDER CHALLENGE · 2026</div>
+        </div>
+        <div class="fade" id="ou-fade"></div>
+      </div>
+
+      <script>
+        window.__timelines = window.__timelines || {};
+        (function () {
+          const tl = gsap.timeline({ paused: true, defaults: { ease: "power2.out" } });
+          tl.fromTo("#root", { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power1.inOut" }, 0);
+          tl.fromTo("#ou-emoji", { opacity: 0, scale: 0.4, rotation: 10 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.65, ease: "back.out(2)" }, 0.25);
+          tl.fromTo("#ou-title", { opacity: 0, y: 38 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 0.45);
+          tl.fromTo("#ou-rl", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.6);
+          tl.fromTo("#ou-rr", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power3.out" }, 0.6);
+          tl.fromTo("#ou-tag", { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.5 }, 0.85);
+          tl.fromTo("#ou-sub", { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5 }, 1.1);
+          tl.fromTo("#ou-chip", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.6)" }, 1.4);
+          tl.fromTo("#ou-glow", { scale: 0.95 }, { scale: 1.07, duration: 2.2, ease: "sine.inOut", yoyo: true, repeat: 1 }, 0);
+          tl.fromTo(".lockup", { scale: 1 }, { scale: 1.02, duration: 5.2, ease: "sine.out" }, 0.6);
+          // final scene: fade to near-black (allowed only here)
+          tl.to("#ou-fade", { opacity: 1, duration: 0.9, ease: "power1.in" }, 5.5);
+          window.__timelines["outro"] = tl;
+        })();
+      </script>
+    </template>
+  </body>
+</html>

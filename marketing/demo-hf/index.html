@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0b060d; }
+      #root { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: #0b060d; }
+      #root > div[data-composition-src] { position: absolute; inset: 0; }
+    </style>
+  </head>
+  <body>
+    <!--
+      Receipts — demo reel (Slack Agent Builder Challenge)
+      intro (t1) → eng (t2) → lead (t3) → outro (t4); ascending tracks so each incoming scene
+      sits above the outgoing one. Scene entrances handle the handoff (each scene fades its own
+      root in over the still-visible outgoing scene; exits banned except the outro's final fade).
+      Audio lives at the root on tracks 10+ (wired after media resolve).
+    -->
+    <div id="root" data-composition-id="root" data-start="0" data-width="1920" data-height="1080" data-duration="62.5">
+
+      <div id="el-intro" data-composition-id="intro" data-composition-src="compositions/intro.html"
+           data-start="0" data-duration="6.0" data-track-index="1" data-width="1920" data-height="1080"></div>
+
+      <div id="el-eng" data-composition-id="eng" data-composition-src="compositions/eng.html"
+           data-start="5.5" data-duration="42" data-track-index="2" data-width="1920" data-height="1080"></div>
+
+      <div id="el-lead" data-composition-id="lead" data-composition-src="compositions/lead.html"
+           data-start="47.0" data-duration="9.5" data-track-index="3" data-width="1920" data-height="1080"></div>
+
+      <div id="el-outro" data-composition-id="outro" data-composition-src="compositions/outro.html"
+           data-start="56.0" data-duration="6.5" data-track-index="4" data-width="1920" data-height="1080"></div>
+
+      <!-- == audio: CC0 bed (fades baked) + bundled SFX on event frames == -->
+      <audio id="au-bgm" src="assets/bgm.mp3" data-start="0" data-duration="62.5" data-track-index="10" data-volume="0.5"></audio>
+
+      <!-- intro -->
+      <audio id="au-in-pop"   src="assets/sfx/pop.mp3"          data-start="0.55" data-duration="0.72" data-track-index="11" data-volume="0.55"></audio>
+      <!-- scene 2 entrance -->
+      <audio id="au-eng-in"   src="assets/sfx/whoosh-short.mp3" data-start="5.6"  data-duration="0.57" data-track-index="11" data-volume="0.5"></audio>
+      <!-- P1: message arrivals (soft) -->
+      <audio id="au-m1" src="assets/sfx/pop.mp3" data-start="6.5"  data-duration="0.72" data-track-index="12" data-volume="0.34"></audio>
+      <audio id="au-m2" src="assets/sfx/pop.mp3" data-start="7.4"  data-duration="0.72" data-track-index="12" data-volume="0.34"></audio>
+      <audio id="au-m3" src="assets/sfx/notification.mp3" data-start="8.4" data-duration="2.46" data-track-index="13" data-volume="0.42"></audio>
+      <audio id="au-m4" src="assets/sfx/pop.mp3" data-start="11.2" data-duration="0.72" data-track-index="12" data-volume="0.34"></audio>
+      <audio id="au-m5" src="assets/sfx/pop.mp3" data-start="12.1" data-duration="0.72" data-track-index="12" data-volume="0.34"></audio>
+      <!-- P2: typing, send, summon lands -->
+      <audio id="au-type" src="assets/sfx/typing.mp3" data-start="14.6" data-duration="1.5"  data-track-index="11" data-volume="0.4"></audio>
+      <audio id="au-type2" src="assets/sfx/typing.mp3" data-start="16.1" data-duration="1.0" data-track-index="11" data-volume="0.35"></audio>
+      <audio id="au-send" src="assets/sfx/whoosh-short.mp3" data-start="17.1" data-duration="0.57" data-track-index="13" data-volume="0.6"></audio>
+      <audio id="au-sm"   src="assets/sfx/pop.mp3" data-start="17.4" data-duration="0.72" data-track-index="12" data-volume="0.4"></audio>
+      <!-- P3: the receipt lands + jump chip -->
+      <audio id="au-card1" src="assets/sfx/notification.mp3" data-start="20.2" data-duration="2.46" data-track-index="11" data-volume="0.65"></audio>
+      <audio id="au-jump"  src="assets/sfx/chime.mp3" data-start="21.85" data-duration="2.5" data-track-index="13" data-volume="0.45"></audio>
+      <!-- P4: deflect card -->
+      <audio id="au-card2" src="assets/sfx/notification.mp3" data-start="30.4" data-duration="2.46" data-track-index="11" data-volume="0.5"></audio>
+      <!-- P5: finds nothing -->
+      <audio id="au-deny" src="assets/sfx/error.mp3" data-start="38.0" data-duration="1.62" data-track-index="11" data-volume="0.45"></audio>
+      <!-- kicker -->
+      <audio id="au-kick" src="assets/sfx/whoosh-cinematic.mp3" data-start="47.0" data-duration="3.0" data-track-index="13" data-volume="0.45"></audio>
+      <audio id="au-ring" src="assets/sfx/ping.mp3" data-start="49.2" data-duration="1.32" data-track-index="11" data-volume="0.5"></audio>
+      <!-- outro -->
+      <audio id="au-out"  src="assets/sfx/pop.mp3" data-start="56.55" data-duration="0.72" data-track-index="12" data-volume="0.55"></audio>
+      <audio id="au-chip" src="assets/sfx/click-soft.mp3" data-start="57.4" data-duration="0.37" data-track-index="11" data-volume="0.45"></audio>
+
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      window.__timelines["root"] = gsap.timeline({ paused: true });
+    </script>
+  </body>
+</html>

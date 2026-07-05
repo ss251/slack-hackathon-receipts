@@ -32,11 +32,12 @@ async function fullWipe(cid: string, meId: string) {
     if (!msgs.length) break;
     let deleted = 0;
     for (const m of msgs) {
-      // bot/persona messages → bot token; the summoner's own messages → user token
-      const isBot = m.bot_id || m.subtype === "bot_message";
+      // IMPORTANT: user-token posts via an app carry BOTH user + bot_id — check user FIRST
+      // (bot token can't delete another user's message; that check order silently missed summons).
       const isMe = m.user === meId;
+      const isBot = !isMe && (m.bot_id || m.subtype === "bot_message");
       if (!isBot && !isMe) continue;                       // system joins etc. — can't delete
-      const d = await api("chat.delete", isBot ? BOT : USER, { channel: cid, ts: m.ts });
+      const d = await api("chat.delete", isMe ? USER : BOT, { channel: cid, ts: m.ts });
       if (d.ok) { n++; deleted++; }
       await wait(110);
     }
