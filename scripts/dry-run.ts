@@ -17,7 +17,7 @@ async function main() {
   console.log(`  LLM: ${llmAvailable() ? g("available") : "heuristic fallback"}`);
   console.log(`  Summon: "${question}"\n`);
 
-  const r = await buildReceipt(question, U);
+  const r = await buildReceipt(question, U, process.env.SLACK_BOT_TOKEN);
   console.log(`  keyword → ${g(r.keyword)}`);
   console.log(`  found: ${r.found} · isDecision: ${r.isDecision} · mentions: ${r.count}\n`);
   console.log(b("  ── the card it would post ──"));

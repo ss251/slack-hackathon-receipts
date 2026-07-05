@@ -24,7 +24,7 @@ function stripMention(text: string): string {
 
 async function respond(question: string, say: any, thread_ts?: string) {
   if (!question) { await say({ text: "Ask me what was decided — e.g. `@Receipts did we decide to drop Node 18?`", thread_ts }); return; }
-  const r = await buildReceipt(question, USER);
+  const r = await buildReceipt(question, USER, BOT);
   await say({ text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
 }
 
@@ -42,7 +42,7 @@ app.shortcut("pull_receipts", async ({ shortcut, ack, client }: any) => {
   const question = stripMention(s.message?.text || "");
   const channel = s.channel?.id;
   const thread_ts = s.message?.thread_ts || s.message?.ts;
-  const r = await buildReceipt(question, USER);
+  const r = await buildReceipt(question, USER, BOT);
   if (channel) await client.chat.postMessage({ channel, text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
 });
 

@@ -21,13 +21,34 @@ function fmtDate(ts?: string): string {
   return new Date(secs * 1000).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-/** Run the whole thing. `userToken` = the summoner's token (RTS searches as them). */
-export async function buildReceipt(question: string, userToken: string): Promise<Receipt> {
+// RTS returns an empty author for username-override (persona) posts, so resolve the real
+// display name from the source message (bot token): username override, else the user's real_name.
+async function enrichAuthor(botToken: string, channelId?: string, ts?: string): Promise<string> {
+  if (!botToken || !channelId || !ts) return "";
+  const call = async (m: string, b: Record<string, unknown>) =>
+    (await fetch(`https://slack.com/api/${m}`, { method: "POST",
+      headers: { Authorization: `Bearer ${botToken}`, "Content-Type": "application/json" }, body: JSON.stringify(b) })).json();
+  try {
+    const h = await call("conversations.history", { channel: channelId, latest: ts, oldest: ts, inclusive: true, limit: 1 });
+    const msg = h?.messages?.[0];
+    if (msg?.username) return msg.username;                 // persona (username override)
+    if (msg?.user) {
+      const u = await call("users.info", { user: msg.user });
+      return u?.user?.profile?.real_name || u?.user?.real_name || u?.user?.name || "";
+    }
+  } catch { /* fall through */ }
+  return "";
+}
+
+/** Run the whole thing. `userToken` = the summoner's token (RTS searches as them).
+ *  `botToken` (optional) enriches the author display name from the source message. */
+export async function buildReceipt(question: string, userToken: string, botToken = ""): Promise<Receipt> {
   const keyword = await extractKeyword(question);
   const res = await searchContext({ token: userToken, query: keyword });
   const hits = res.hits.filter(h => (h.text || "").trim());
   const j = await judge(question, hits);
   const best = j.index >= 0 ? hits[j.index] : undefined;
+  if (best && !best.author) best.author = await enrichAuthor(botToken, best.channelId, best.ts);
 
   if (!best) {
     return {

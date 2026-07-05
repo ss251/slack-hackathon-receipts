@@ -1,84 +1,107 @@
-// Receipts — automated sandbox seeding. Run: `bun run seed`
+// Receipts — seed a BELIEVABLE demo workspace: real personas talking in channels, a decision
+// made and later re-litigated, a thrice-asked question, and a private-channel decision the
+// summoner can't see (the ACL kicker). Personas are posted via chat:write.customize so they
+// render as distinct people; the receipt resolves their names via conversations.history.
 //
-// Creates the exact go/no-go scenario the spike + demo expect, so you don't hand-post anything:
-//   • #receipts-demo (public)      — the seeded prior DECISION ("dropping Node 18") + follow-ups
-//   • a repeat question asked 3×   — for the FAQ-deflect beat
-//   • #security-audit (PRIVATE)    — the ACL negative control the summoner is NOT in
-//
-// The private channel is created by the BOT (needs groups:write) and the summoner user is NOT
-// invited — so RTS-as-summoner correctly cannot see it (Check 3 of the spike). Idempotent-ish:
-// re-running creates fresh dated messages; channels are reused if they already exist.
-//
-// Needs (in .env.local): SLACK_BOT_TOKEN. Optional: SEED_PUBLIC_CHANNEL, SEED_PRIVATE_CHANNEL.
+//   bun run seed          # clean old junk + seed the scenario
+// Needs .env.local: SLACK_BOT_TOKEN (chat:write.customize, groups:write), SLACK_USER_TOKEN.
 
 import "dotenv/config";
-
 const BOT = process.env.SLACK_BOT_TOKEN ?? "";
-const PUBLIC_CH = process.env.SEED_PUBLIC_CHANNEL ?? "receipts-demo";
-const PRIVATE_CH = process.env.SEED_PRIVATE_CHANNEL ?? "security-audit";
-
+const USER = process.env.SLACK_USER_TOKEN ?? "";
 const g = (s: string) => `\x1b[32m${s}\x1b[0m`;
 const r = (s: string) => `\x1b[31m${s}\x1b[0m`;
 
-async function api(method: string, body: Record<string, unknown>) {
+async function api(method: string, body: Record<string, unknown>, token = BOT) {
   const res = await fetch(`https://slack.com/api/${method}`, {
-    method: "POST",
-    headers: { Authorization: `Bearer ${BOT}`, "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify(body),
+    method: "POST", headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }, body: JSON.stringify(body),
   });
-  return res.json();
+  return res.json() as any;
 }
+const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-async function ensureChannel(name: string, isPrivate: boolean): Promise<string | null> {
-  // find first (works even without channels:manage) — reuse an existing channel like #general
-  const types = isPrivate ? "private_channel" : "public_channel";
-  const list = await api("conversations.list", { types, limit: 1000, exclude_archived: true });
-  const existing = list.channels?.find((c: any) => c.name === name);
-  if (existing) { console.log(`  = reusing #${name}`); return existing.id; }
-  // else try to create (needs channels:manage / groups:write)
-  const created = await api("conversations.create", { name, is_private: isPrivate });
-  if (created.ok) { console.log(g(`  + created #${name}`)); return created.channel.id; }
-  console.log(r(`  ✗ #${name}: ${created.error} (can't create; set SEED_PUBLIC_CHANNEL to an existing channel like 'general')`));
-  return null;
-}
+// personas (username + emoji avatar)
+const DANA = { username: "Dana Okafor", icon_emoji: ":woman-technologist:" };
+const SAM  = { username: "Sam Rivera",  icon_emoji: ":man-technologist:" };
+const PRIYA= { username: "Priya Nair",  icon_emoji: ":technologist:" };
+const LEO  = { username: "Leo Park",    icon_emoji: ":man-student:" };
+const MAYA = { username: "Maya Chen",   icon_emoji: ":artist:" };
 
-async function post(channel: string, text: string) {
-  const res = await api("chat.postMessage", { channel, text });
-  if (!res.ok) console.log(r(`  ✗ post failed (${res.error})`));
+async function say(channel: string, who: any, text: string) {
+  const res = await api("chat.postMessage", { channel, text, ...who });
+  if (!res.ok) console.log(r(`   ✗ post (${who.username}): ${res.error}`));
+  await wait(700); // keep ordering stable + let RTS index
   return res;
 }
 
-async function main() {
-  if (!BOT.startsWith("xoxb-")) {
-    console.log(r("SLACK_BOT_TOKEN missing. Do Phase 0 first (HUMAN_SETUP.md).")); process.exit(1);
-  }
-  console.log("\n🌱 Seeding the Receipts go/no-go scenario\n");
-
-  // 1) Public channel + the seeded DECISION (Check 2 target) + realistic re-litigation follow-ups
-  const pub = await ensureChannel(PUBLIC_CH, false);
-  if (pub) {
-    await api("conversations.join", { channel: pub });
-    await post(pub, "📌 Decision: we're *dropping Node 18* support in v3 — it's EOL'd upstream. If you still need it, pin v2. — settled in the maintainers sync.");
-    await post(pub, "quick q, are we actually killing Node 18 or was that just floated last week?");
-    await post(pub, "wait didn't we already decide this? i can never find where these things land 😩");
-    // 2) The repeat question (FAQ-deflect beat) — asked 3×
-    for (const t of [
-      "how do I get RTS / assistant.search.context working in the sandbox?",
-      "hey how do you get real-time search set up? can't get it to return anything",
-      "newbie q — how do I enable the RTS API on my sandbox app?",
-    ]) await post(pub, t);
-    console.log(g(`  ✓ seeded decision + repeats in #${PUBLIC_CH}`));
-  }
-
-  // 3) PRIVATE channel the summoner is NOT in — the ACL negative control (Check 3)
-  const priv = await ensureChannel(PRIVATE_CH, true);
-  if (priv) {
-    await post(priv, "🔒 Decision from the *security audit*: we're rotating all sandbox tokens weekly. (This message must stay invisible to anyone not in this channel — it's the ACL control.)");
-    console.log(g(`  ✓ seeded private ACL control in #${PRIVATE_CH} (do NOT invite your summoner user here)`));
-  }
-
-  console.log("\nNext: set SEED_QUERY=\"Node 18\", SEED_EXPECT_TEXT=\"dropping Node 18\", " +
-    "SEED_PRIVATE_QUERY=\"security audit\" in .env.local, then `bun run spike`.\n");
+async function ensurePrivate(name: string, inviteUserId?: string): Promise<string | null> {
+  const list = await api("conversations.list", { types: "private_channel", limit: 1000, exclude_archived: true });
+  let ch = list.channels?.find((c: any) => c.name === name);
+  let id = ch?.id;
+  if (!id) {
+    const c = await api("conversations.create", { name, is_private: true });
+    if (!c.ok) { console.log(r(`   ✗ create #${name}: ${c.error}`)); return null; }
+    id = c.channel.id; console.log(g(`   + created private #${name}`));
+  } else console.log(`   = reusing #${name}`);
+  if (inviteUserId) { const inv = await api("conversations.invite", { channel: id, users: inviteUserId }); if (!inv.ok && inv.error !== "already_in_channel") console.log(`   (invite ${name}: ${inv.error})`); }
+  return id;
 }
 
-main().catch((e) => { console.error(r("seed crashed:"), e); process.exit(1); });
+async function cleanChannel(channelId: string) {
+  // delete the bot's own prior seed messages (flat dump) so the demo starts clean
+  const hist = await api("conversations.history", { channel: channelId, limit: 100 });
+  let n = 0;
+  for (const m of hist.messages || []) {
+    if (m.bot_id || m.subtype === "bot_message") { const d = await api("chat.delete", { channel: channelId, ts: m.ts }); if (d.ok) n++; await wait(150); }
+  }
+  if (n) console.log(`   cleaned ${n} old bot messages`);
+}
+
+async function main() {
+  if (!BOT.startsWith("xoxb-") || !USER.startsWith("xoxp-")) { console.log(r("Need SLACK_BOT_TOKEN + SLACK_USER_TOKEN in .env.local.")); process.exit(1); }
+  const me = await api("auth.test", {}, USER);
+  const summoner = me.user_id;
+  console.log(`\n🌱 Seeding demo workspace (summoner = @${me.user} ${summoner})\n`);
+
+  // tidy #general (old flat dump lived here)
+  const pub = await api("conversations.list", { types: "public_channel", limit: 200 });
+  const general = pub.channels?.find((c: any) => c.name === "general");
+  if (general) { await api("conversations.join", { channel: general.id }); await cleanChannel(general.id); }
+
+  // ── #engineering (private, summoner invited): the whole visible scene ──
+  const eng = await ensurePrivate("engineering", summoner);
+  if (eng) {
+    await cleanChannel(eng);
+    console.log("   seeding #engineering…");
+    // the decision (made "earlier")
+    await say(eng, SAM,   "heads up — Node 18 hit end-of-life upstream last week, and we're still shipping it in the v3 build.");
+    await say(eng, PRIYA, "that's a real problem, no more security patches. are we dropping it?");
+    await say(eng, DANA,  "📌 Decision: we're dropping Node 18 support in v3. It's EOL'd upstream — anyone still on it should pin v2. Confirmed with the platform team, this is final.");
+    await say(eng, SAM,   "👍 on it — I'll update the CI matrix and the release docs.");
+    // the migration question (asked 3× over time = the FAQ-deflect beat)
+    await say(eng, LEO,   "how do I run the DB migrations locally?");
+    await say(eng, DANA,  "`bun run migrate:local` after you pull — just make sure DATABASE_URL is set in your .env");
+    await say(eng, MAYA,  "newbie q — how do I run the migrations on my machine?");
+    await say(eng, SAM,   "^ it's `bun run migrate:local`. we should really FAQ this one.");
+    // the re-litigation (this is where the demo summons Receipts)
+    await say(eng, LEO,   "quick q — are we keeping Node 18 for the v3 release or not? saw a PR still targeting it");
+    await say(eng, PRIYA, "wait didn't we already settle this? I can never find where these decisions land 😩");
+    await say(eng, LEO,   "and… how do you run the migrations locally again? can't find where that was said");
+    console.log(g("   ✓ #engineering seeded"));
+  }
+
+  // ── #leadership (private, summoner NOT invited): the ACL control ──
+  const lead = await ensurePrivate("leadership"); // no invite
+  if (lead) {
+    await cleanChannel(lead);
+    await say(lead, DANA, "📌 Decision: we're moving analytics off Amplitude to Mixpanel — finance approved the budget. Rolling out next quarter. Keep this in here for now.");
+    console.log(g("   ✓ #leadership seeded (summoner is NOT a member — ACL control)"));
+  }
+
+  console.log(`\nDemo summons to try (@Receipts …):`);
+  console.log(`  • "did we decide to drop Node 18?"     → hero receipt (Dana's decision + jump)`);
+  console.log(`  • "how do I run migrations locally?"    → FAQ-deflect (asked 3×)`);
+  console.log(`  • "what did we decide about analytics?" → correctly finds NOTHING (Mixpanel is in #leadership you can't see)`);
+  console.log(`\nNote: RTS indexes new messages in ~15s — seed is done, give it a moment before demoing.\n`);
+}
+main().catch(e => { console.error(r("seed crashed:"), e); process.exit(1); });
