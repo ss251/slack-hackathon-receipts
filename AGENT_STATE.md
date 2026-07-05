@@ -113,7 +113,7 @@ line. Loop the card design until it reads as *evidence*, not chat. Screenshot on
 - [ ] FAQ-deflect loop + canvas write (maintainer-approve)
 
 **Phase 3 — Seed + demo**
-- [ ] Seed sandbox "community" workspace: a real prior decision + repeats + one **private-channel**
+- [x] Seed sandbox "community" workspace: a real prior decision + repeats + one **private-channel**
       decision for the ACL kicker + a believable ~few-week backstory
 - [ ] Architecture diagram; scripted 3-min demo (see §demo); recorded fallback take
 - [ ] Deploy to Railway (HTTP), smoke-test, grant test access to `slackhack@salesforce.com` +

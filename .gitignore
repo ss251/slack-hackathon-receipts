@@ -6,3 +6,5 @@ node_modules/
 .DS_Store
 dist/
 .output/
+marketing/demo/node_modules/
+marketing/demo/out/
