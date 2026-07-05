@@ -31,7 +31,7 @@ async function respond(question: string, say: any, thread_ts?: string) {
 // Hero beat: @Receipts <question>
 app.event("app_mention", async ({ event, say }: any) => {
   const q = stripMention((event as any).text);
-  const thread_ts = (event as any).thread_ts || (event as any).ts;
+  const thread_ts = (event as any).thread_ts; // reply in-channel for top-level mentions
   await respond(q, say, thread_ts);
 });
 

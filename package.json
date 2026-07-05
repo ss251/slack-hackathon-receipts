@@ -3,11 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Receipts — a Slack agent that ends arguments with the actual prior decision (RTS search-as-you → verbatim quote + permalink).",
+  "description": "Receipts \u2014 a Slack agent that ends arguments with the actual prior decision (RTS search-as-you \u2192 verbatim quote + permalink).",
   "scripts": {
     "spike": "bun run scripts/spike.ts",
     "seed": "bun run scripts/seed.ts",
-    "dev": "bun run src/app.ts"
+    "dev": "bun run src/app.ts",
+    "stage": "bun run scripts/stage.ts"
   },
   "dependencies": {
     "@slack/bolt": "^4.2.0",

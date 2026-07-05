@@ -1,18 +1,10 @@
-# Receipts — Slack app manifest.
-# Collapses the whole scopes/events/socket-mode config into one paste.
-# Use: api.slack.com/apps → Create New App → "From an app manifest" → pick your sandbox → paste this.
-# The ONLY thing this doesn't do is the Agents toggle — after creating, go to the app's "Agents"
-# tab and enable it (one click; it auto-adds the assistant:write scope). Then Install.
+# Receipts — Slack app manifest (COMPREHENSIVE scopes for autonomous demo staging).
+# Apply via the app's "App Manifest" page (JSON tab), then reinstall.
 
 display_information:
   name: Receipts
-  description: Ends arguments with the actual prior decision — verbatim quote + live permalink.
+  description: Ends arguments with the actual prior decision - verbatim quote + live permalink.
   background_color: "#2eb67d"
-  long_description: >-
-    Summon Receipts mid-conversation and it returns the prior decision or answer as a card —
-    the verbatim quote, who said it, when, and a live permalink — searched only from what you
-    can see (permission-aware). It also deflects repeat questions into a growing FAQ. Built on
-    the Real-Time Search API for the Slack Agent Builder Challenge.
 
 features:
   bot_user:
@@ -22,27 +14,73 @@ features:
 oauth_config:
   scopes:
     bot:
-      - app_mentions:read      # hear the @Receipts summon
-      - chat:write             # post the receipt card
-      - chat:write.public      # post in channels it isn't a member of
-      - channels:read          # resolve channel names/ids
-      - channels:history       # read thread context on summon
-      - channels:join          # join public channels to post/seed
-      - groups:read            # private channel metadata
-      - groups:history         # private thread context (where the bot is a member)
-      - groups:write           # create the private ACL-control channel during seeding
-      - canvases:write         # the growing FAQ canvas
-      - commands               # message shortcut "Pull receipts"
+      # messaging
+      - app_mentions:read
+      - chat:write
+      - chat:write.public
+      - chat:write.customize
+      - commands
+      # channels (public) — full management
+      - channels:read
+      - channels:history
+      - channels:join
+      - channels:manage
+      - channels:write.topic
+      - channels:write.invites
+      # channels (private)
+      - groups:read
+      - groups:history
+      - groups:write
+      - groups:write.topic
+      - groups:write.invites
+      # DMs / group DMs
+      - im:read
+      - im:history
+      - im:write
+      - mpim:read
+      - mpim:history
+      - mpim:write
+      # reactions / pins / bookmarks / canvases / files
+      - reactions:read
+      - reactions:write
+      - pins:read
+      - pins:write
+      - bookmarks:read
+      - bookmarks:write
+      - canvases:read
+      - canvases:write
+      - files:read
+      - files:write
+      # people / metadata
+      - users:read
+      - users:read.email
+      - users.profile:read
+      - usergroups:read
+      - usergroups:write
+      - team:read
+      - emoji:read
+      - assistant:write
     user:
-      - search:read.public     # RTS: search public channels as the summoner
-      - search:read.private    # RTS: search private channels the summoner can see
+      # RTS engine (the product)
+      - search:read.public
+      - search:read.private
+      # act as the summoner / stage the demo as a real user
+      - chat:write
+      - channels:read
+      - channels:write
+      - channels:history
+      - groups:read
+      - groups:write
+      - groups:history
+      - reactions:write
+      - users:read
 
 settings:
   event_subscriptions:
     bot_events:
-      - app_mention            # the summon trigger (also the reliable action_token carrier)
+      - app_mention
   interactivity:
-    is_enabled: true           # message shortcut + card buttons
-  socket_mode_enabled: true    # dev: no public URL needed
+    is_enabled: true
+  socket_mode_enabled: true
   org_deploy_enabled: false
   token_rotation_enabled: false

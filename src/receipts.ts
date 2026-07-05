@@ -40,12 +40,40 @@ async function enrichAuthor(botToken: string, channelId?: string, ts?: string): 
   return "";
 }
 
+// Keyword-mode RTS requires the query terms to actually appear in the messages, so an
+// over-specific LLM keyword (e.g. "Node 18 deprecation" when only "Node 18" is written) misses.
+// Search progressively broader until we get hits: LLM keyword → its individual tokens → the
+// question's distinctive tokens. Dedupe by permalink.
+const STOPW = new Set(("a an the is are was were do does did we you i they it he she to of for on in at and or " +
+  "but so what when where who why how which that this these those did didnt dont will would could should about " +
+  "with can cant our your their decide decided deciding decision use using go going keep keeping run running").split(/\s+/));
+function distinctTokens(s: string): string[] {
+  return [...new Set(s.replace(/[^\p{L}\p{N}\s]/gu, " ").split(/\s+/)
+    .filter(w => w && !STOPW.has(w.toLowerCase())))];
+}
+async function progressiveSearch(userToken: string, keyword: string, question: string) {
+  const queries: string[] = [];
+  if (keyword.trim()) queries.push(keyword.trim());
+  const kwToks = distinctTokens(keyword);
+  if (kwToks.length > 1) queries.push(...kwToks);          // each keyword token alone
+  for (const t of distinctTokens(question)) if (!queries.includes(t)) queries.push(t);
+  const seen = new Set<string>(); const hits: any[] = [];
+  for (const q of queries) {
+    const res = await searchContext({ token: userToken, query: q });
+    for (const h of res.hits) {
+      const key = h.permalink || (h.channelId || "") + (h.ts || "");
+      if ((h.text || "").trim() && !seen.has(key)) { seen.add(key); hits.push(h); }
+    }
+    if (hits.length >= 3) break;                            // enough signal, stop widening
+  }
+  return hits;
+}
+
 /** Run the whole thing. `userToken` = the summoner's token (RTS searches as them).
  *  `botToken` (optional) enriches the author display name from the source message. */
 export async function buildReceipt(question: string, userToken: string, botToken = ""): Promise<Receipt> {
   const keyword = await extractKeyword(question);
-  const res = await searchContext({ token: userToken, query: keyword });
-  const hits = res.hits.filter(h => (h.text || "").trim());
+  const hits = await progressiveSearch(userToken, keyword, question);
   const j = await judge(question, hits);
   const best = j.index >= 0 ? hits[j.index] : undefined;
   if (best && !best.author) best.author = await enrichAuthor(botToken, best.channelId, best.ts);
