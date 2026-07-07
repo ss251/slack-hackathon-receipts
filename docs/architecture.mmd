@@ -1,0 +1,45 @@
+%%{init: {"theme":"base","themeVariables":{
+  "primaryColor":"#F4EDE4","primaryTextColor":"#1D1C1D","primaryBorderColor":"#4A154B",
+  "lineColor":"#4A154B","fontFamily":"Helvetica,Arial,sans-serif","fontSize":"14px"
+}}}%%
+flowchart TD
+  U["👤 Community member<br/><i>the summoner</i>"]
+
+  U -->|"@Receipts did we decide to drop Node 18?<br/>(app_mention)"| APP
+  U -->|"'Pull receipts' message shortcut"| APP
+
+  APP["🧾 <b>Receipts agent</b><br/>Bolt · Socket Mode · app.ts"]
+  APP --> P
+
+  subgraph P["buildReceipt pipeline · receipts.ts"]
+    direction TB
+    K["1 · extractKeyword<br/>llm.ts — Claude, temp 0<br/>(heuristic fallback)"]
+    S["2 · progressiveSearch<br/>widens keyword → tokens until ≥3 hits"]
+    J["3 · judge<br/>a decision? still current? · llm.ts"]
+    E["4 · enrichAuthor<br/>conversations.history (bot token)"]
+    K --> S --> J --> E
+  end
+
+  S -->|"searches AS the summoner<br/>(user token)"| RTS
+  RTS[("🔎 Slack Real-Time Search API<br/>assistant.search.context<br/><b>permission-scoped</b>")]
+  RTS -.->|"only channels the summoner can see"| S
+
+  P --> CARD
+  CARD["📇 <b>Block Kit receipt card</b><br/>verbatim quote · @author · #channel · date<br/>↪ Jump permalink · 'asked &amp; answered N×'"]
+  CARD -->|"chat.postMessage — posted<br/>back into the thread"| OUT["💬 The summoner gets the receipt,<br/>in-thread, where the argument was"]
+
+  ACL["🔒 <b>ACL guarantee</b><br/>a decision in a private channel the summoner<br/>isn't in → 'nothing on record' — never leaked.<br/>Impossible for a bot over a stale index."]
+  RTS -.-> ACL
+
+  FAQ["📌 <b>Planned:</b> FAQ-deflect<br/>repeat question → canvases.write grows a living FAQ"]
+  CARD -.->|next| FAQ
+
+  classDef prod fill:#2EB67D,stroke:#1a7f56,color:#ffffff;
+  classDef rts fill:#ECB22E,stroke:#8a6d1a,color:#1D1C1D;
+  classDef guard fill:#FBEAEA,stroke:#E01E5A,color:#1D1C1D;
+  classDef plan fill:#F4EDE4,stroke:#4A154B,color:#4A154B,stroke-dasharray:4 3;
+  class APP,CARD prod;
+  class RTS rts;
+  class ACL guard;
+  class FAQ plan;
+  class OUT plan;
