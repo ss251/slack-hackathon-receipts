@@ -10,6 +10,13 @@ features:
   bot_user:
     display_name: Receipts
     always_online: true
+  shortcuts:
+    # "Pull receipts" message shortcut — handled in src/app.ts (callback_id: pull_receipts).
+    # Requires app reinstall after this manifest change for the shortcut to appear in Slack's UI.
+    - name: Pull receipts
+      type: message
+      callback_id: pull_receipts
+      description: Find the prior decision for this message — verbatim quote + permalink.
 
 oauth_config:
   scopes:

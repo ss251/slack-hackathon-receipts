@@ -3,7 +3,8 @@
 // It searches the workspace AS the summoner (RTS, permission-aware) and posts the receipt card.
 import "dotenv/config";
 import { App } from "@slack/bolt";
-import { buildReceipt } from "./receipts.ts";
+import { buildReceipt, renderErrorBlocks } from "./receipts.ts";
+import { llmStatus } from "./llm.ts";
 
 const BOT = process.env.SLACK_BOT_TOKEN ?? "";
 const APP_TOKEN = process.env.SLACK_APP_TOKEN ?? "";
@@ -24,8 +25,14 @@ function stripMention(text: string): string {
 
 async function respond(question: string, say: any, thread_ts?: string) {
   if (!question) { await say({ text: "Ask me what was decided — e.g. `@Receipts did we decide to drop Node 18?`", thread_ts }); return; }
-  const r = await buildReceipt(question, USER, BOT);
-  await say({ text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
+  try {
+    const r = await buildReceipt(question, USER, BOT);
+    await say({ text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
+  } catch (e) {
+    console.warn("[receipts] buildReceipt failed:", (e as Error).message);
+    const { text, blocks } = renderErrorBlocks(question);
+    await say({ text, blocks, thread_ts, unfurl_links: false });
+  }
 }
 
 // Hero beat: @Receipts <question>
@@ -42,11 +49,18 @@ app.shortcut("pull_receipts", async ({ shortcut, ack, client }: any) => {
   const question = stripMention(s.message?.text || "");
   const channel = s.channel?.id;
   const thread_ts = s.message?.thread_ts || s.message?.ts;
-  const r = await buildReceipt(question, USER, BOT);
-  if (channel) await client.chat.postMessage({ channel, text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
+  try {
+    const r = await buildReceipt(question, USER, BOT);
+    if (channel) await client.chat.postMessage({ channel, text: r.text, blocks: r.blocks, thread_ts, unfurl_links: false });
+  } catch (e) {
+    console.warn("[receipts] buildReceipt failed (shortcut):", (e as Error).message);
+    const { text, blocks } = renderErrorBlocks(question);
+    if (channel) await client.chat.postMessage({ channel, text, blocks, thread_ts, unfurl_links: false });
+  }
 });
 
 (async () => {
   await app.start();
   console.log("🧾 Receipts is running (Socket Mode). Summon it: @Receipts <question>");
+  console.log(`[llm] ${llmStatus()}`); // "api-key" | "oauth" | "heuristics" — never logs the credential itself
 })();

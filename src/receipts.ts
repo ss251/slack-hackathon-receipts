@@ -69,6 +69,74 @@ async function progressiveSearch(userToken: string, keyword: string, question: s
   return hits;
 }
 
+// The provenance line is deliberate, not decorative: it names the load-bearing required tech
+// (Slack Real-Time Search — assistant.search.context, called in rts.ts) literally, in the one
+// artifact a judge actually looks at, and states the ACL guarantee (search runs as the
+// summoner) that a generic indexing bot cannot replicate.
+const PROVENANCE = ":mag: via Slack Real-Time Search (`assistant.search.context`) · scoped to your permissions";
+
+/** Pure block assembly for the "no prior decision found" state. No network calls. */
+export function renderNoResultBlocks(keyword: string): { text: string; blocks: any[] } {
+  return {
+    text: `No prior decision found for "${keyword}".`,
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "🧾 Receipts", emoji: true } },
+      { type: "section", text: { type: "mrkdwn",
+        text: `I searched what you can see for *${keyword}* — no prior decision on record. This might be a fresh one.` } },
+      { type: "context", elements: [{ type: "mrkdwn", text: PROVENANCE }] },
+    ],
+  };
+}
+
+/** Pure block assembly for a Bolt/network-call failure. No network calls. */
+export function renderErrorBlocks(question: string): { text: string; blocks: any[] } {
+  return {
+    text: "Receipts hit a snag searching — try again in a moment.",
+    blocks: [
+      { type: "header", text: { type: "plain_text", text: "🧾 Receipts", emoji: true } },
+      { type: "section", text: { type: "mrkdwn",
+        text: `Receipts hit a snag searching for *"${question.slice(0, 200)}"* — try again in a moment.` } },
+      { type: "context", elements: [{ type: "mrkdwn", text: ":warning: search or judge call failed" }] },
+    ],
+  };
+}
+
+export interface ReceiptFields {
+  who: string;
+  where: string;
+  date: string;
+  quote: string;
+  count: number;
+  isDecision: boolean;
+  unchanged: boolean;
+  permalink?: string;
+}
+
+/** Pure block assembly for a found receipt. No network calls — takes already-resolved fields
+ *  so it's unit-testable without Slack/Anthropic tokens. */
+export function renderReceiptBlocks(f: ReceiptFields): { text: string; blocks: any[] } {
+  const countLine = f.count > 1 ? `asked & answered ${f.count}×` : "first time asked";
+
+  const blocks: any[] = [
+    { type: "header", text: { type: "plain_text", text: "🧾 Receipts", emoji: true } },
+    { type: "section", text: { type: "mrkdwn",
+      text: `${f.isDecision ? "Here's the prior decision" : "Closest prior answer"} by *${f.who}* in *${f.where}*${f.date ? ` on ${f.date}` : ""}:` } },
+    { type: "section", text: { type: "mrkdwn", text: `> ${f.quote.slice(0, 400)}` } },
+    { type: "context", elements: [{ type: "mrkdwn",
+      text: `${PROVENANCE} · ${countLine}${f.unchanged ? " · :white_check_mark: what's changed since: nothing" : " · :warning: a later message may revise this"}` }] },
+  ];
+  if (f.permalink) {
+    blocks.push({ type: "actions", elements: [
+      { type: "button", text: { type: "plain_text", text: "↪ Jump to message", emoji: true }, url: f.permalink, action_id: "jump" },
+    ]});
+  }
+
+  return {
+    text: `${f.isDecision ? "Prior decision" : "Prior answer"} by ${f.who} in ${f.where}: ${f.quote.slice(0, 140)}${f.permalink ? " " + f.permalink : ""}`,
+    blocks,
+  };
+}
+
 /** Run the whole thing. `userToken` = the summoner's token (RTS searches as them).
  *  `botToken` (optional) enriches the author display name from the source message. */
 export async function buildReceipt(question: string, userToken: string, botToken = ""): Promise<Receipt> {
@@ -79,34 +147,21 @@ export async function buildReceipt(question: string, userToken: string, botToken
   if (best && !best.author) best.author = await enrichAuthor(botToken, best.channelId, best.ts);
 
   if (!best) {
-    return {
-      found: false, question, keyword, isDecision: false, unchanged: true, count: hits.length,
-      text: `No prior decision found for “${keyword}”.`,
-      blocks: [{ type: "section", text: { type: "mrkdwn",
-        text: `:mag: I searched what you can see for *${keyword}* — no prior decision on record. This might be a fresh one.` } }],
-    };
+    const { text, blocks } = renderNoResultBlocks(keyword);
+    return { found: false, question, keyword, isDecision: false, unchanged: true, count: hits.length, text, blocks };
   }
 
   const who = best.author ? `@${best.author}` : "someone";
   const where = best.channelName ? `#${best.channelName}` : "a channel";
   const date = fmtDate(best.ts);
   const quote = (best.text || "").replace(/\s+/g, " ").trim();
-  const countLine = hits.length > 1 ? `_asked & answered ${hits.length}× · searched as you (permission-aware)_` : `_searched as you (permission-aware)_`;
 
-  const blocks: any[] = [
-    { type: "section", text: { type: "mrkdwn",
-      text: `:receipt: *Receipts* — ${j.isDecision ? "here's the prior decision" : "closest prior answer"} by *${who}* in *${where}*${date ? ` on ${date}` : ""}:` } },
-    { type: "section", text: { type: "mrkdwn", text: `> ${quote.slice(0, 400)}` } },
-    { type: "context", elements: [{ type: "mrkdwn", text: `${countLine}${j.unchanged ? " · :white_check_mark: what's changed since: nothing" : " · :warning: a later message may revise this"}` }] },
-  ];
-  if (best.permalink) {
-    blocks.push({ type: "actions", elements: [
-      { type: "button", text: { type: "plain_text", text: "↪ Jump to message", emoji: true }, url: best.permalink, action_id: "jump" },
-    ]});
-  }
+  const { text, blocks } = renderReceiptBlocks({
+    who, where, date, quote, count: hits.length,
+    isDecision: j.isDecision, unchanged: j.unchanged, permalink: best.permalink,
+  });
 
   return {
-    found: true, question, keyword, best, isDecision: j.isDecision, unchanged: j.unchanged, count: hits.length, blocks,
-    text: `${j.isDecision ? "Prior decision" : "Prior answer"} by ${who} in ${where}: ${quote.slice(0, 140)}${best.permalink ? " " + best.permalink : ""}`,
+    found: true, question, keyword, best, isDecision: j.isDecision, unchanged: j.unchanged, count: hits.length, blocks, text,
   };
 }

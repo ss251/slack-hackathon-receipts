@@ -27,9 +27,9 @@ ago — and Leo just re-asked, and Priya can't find where it landed. Every team,
    you (permission-aware) · ✅ what's changed since: nothing"* + **Jump to message** button.
    **Click Jump** — it lands on Dana's actual message. That's the argument-ender.
 
-2. **The FAQ-deflect.** Type: `@Receipts how do I run the migrations locally?`
-   → Prior answer (`bun run migrate:local`) + the asked-count. Point at the count:
-   "it knows this is the Nth time — the FAQ writes itself."
+2. **The repeat-answer counter.** Type: `@Receipts how do I run the migrations locally?`
+   → Prior answer (`bun run migrate:local`) + the asked-count. Point at the count: "the
+   community has re-asked this N times — Receipts answers it instantly, sourced."
 
 3. **The ACL kicker.** Type: `@Receipts what did we decide about our analytics vendor?`
    → *"🔍 I searched what you can see for **analytics vendor** — no prior decision on record."*

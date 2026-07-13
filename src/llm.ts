@@ -1,18 +1,26 @@
 // Receipts — LLM seam. Uses an Anthropic credential when available, else deterministic
-// heuristics so the agent is always testable. Two credentials supported:
-//   ANTHROPIC_API_KEY        → x-api-key (pay-as-you-go)
-//   ANTHROPIC_OAUTH_TOKEN    → Bearer + oauth beta + "You are Claude Code" system (Max/OAuth)
-// If neither works (missing/expired), callClaude returns null and callers fall back.
+// heuristics so the agent is always testable. Two credentials supported, both env-gated —
+// the default path is env-only so an expired/stale credential is never silently used:
+//   ANTHROPIC_API_KEY        → x-api-key (pay-as-you-go), read unconditionally from env.
+//   ANTHROPIC_OAUTH_TOKEN    → Bearer + oauth beta + "You are Claude Code" system (Max/OAuth),
+//                               read from env, OR (only when RECEIPTS_USE_KEYCHAIN=1) read live
+//                               from the macOS keychain — opt-in, since Claude Code rotates that
+//                               token and a stale demo shouldn't grab it by default.
+// If neither works (missing/expired), callClaude returns null and callers fall back to
+// heuristics. Call llmStatus() after startup to log which path is actually live.
 
 import { execSync } from "node:child_process";
 
 const API_KEY = process.env.ANTHROPIC_API_KEY?.startsWith("sk-ant-api") ? process.env.ANTHROPIC_API_KEY : "";
 
-// Resolve a Claude Code OAuth token: explicit env first, else read the LIVE token from the
-// macOS keychain (Claude Code rotates it, so reading at startup keeps it fresh for local testing).
+// Resolve a Claude Code OAuth token: explicit env first, else — only when explicitly opted in
+// via RECEIPTS_USE_KEYCHAIN=1 — read the LIVE token from the macOS keychain (Claude Code rotates
+// it, so reading at startup keeps it fresh for local testing). Never reads the keychain by
+// default: an expired/rotated token would otherwise be picked up silently.
 function resolveOAuth(): string {
   const env = process.env.ANTHROPIC_OAUTH_TOKEN;
   if (env?.startsWith("sk-ant-oat")) return env;
+  if (process.env.RECEIPTS_USE_KEYCHAIN !== "1") return "";
   try {
     const raw = execSync('security find-generic-password -s "Claude Code-credentials" -w',
       { encoding: "utf8", stdio: ["ignore", "pipe", "ignore"] });
@@ -28,6 +36,14 @@ let llmDisabled = false; // trip after a 401 so we stop hammering an expired tok
 
 export function llmAvailable(): boolean {
   return !llmDisabled && (!!API_KEY || !!OAUTH);
+}
+
+/** Which credential path is actually live, for a clear startup log — never logs the value. */
+export function llmStatus(): "api-key" | "oauth" | "heuristics" {
+  if (llmDisabled) return "heuristics";
+  if (API_KEY) return "api-key";
+  if (OAUTH) return "oauth";
+  return "heuristics";
 }
 
 /** Single-shot Claude call. Returns the text, or null if unavailable/failed (caller falls back). */

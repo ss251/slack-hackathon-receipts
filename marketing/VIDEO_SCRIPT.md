@@ -29,32 +29,35 @@ see. This decision lives in a private channel I'm not in, so Receipts won't surf
 indexing the whole workspace would leak it. Receipts can't — by construction." *(This is the beat
 that can't be faked. Land it slowly.)*
 
-### 1:30–2:00 — STICKY: repeat questions get deflected  *(only if built)*
-**[SCREEN]** The "asked & answered N×" counter ticks up; a maintainer approves → an FAQ canvas
-gains a new entry linking the source permalink.
-**(VO)** "When the same question keeps coming back, Receipts offers to pin it — one tap grows a
-living FAQ, sourced to the real thread. The community's memory maintains itself."
-*(If FAQ-deflect isn't built by film day: cut this section, show the message shortcut "Pull
-receipts" on any message instead, and keep the video tighter. Never show a half-built beat.)*
+### 1:30–1:50 — STICKY: the repeat-answer counter + the shortcut
+**[SCREEN]** The "asked & answered N×" counter on a real repeat question; then a quick cut to the
+"Pull receipts" message shortcut invoked on an existing message in the channel.
+**(VO)** "The counter tells you how many times the community has already re-asked this — and you
+don't even need to type a question. Right-click any message, 'Pull receipts,' and it finds the
+prior answer for that exact thread."
 
-### 2:00–2:25 — HOW (fast, don't dwell)
+### 1:50–2:15 — HOW (fast, don't dwell)
 **[SCREEN]** The one-screen architecture diagram (`docs/architecture.png`).
 **(VO)** "Under the hood: a Slack agent built on Block Kit, powered by Slack's Real-Time Search
 API — run with the summoner's own permissions. One piece of tech, because it's the whole point."
 
-### 2:25–2:45 — WHO IT'S FOR + WHY IT MATTERS (Agent for Good)
+### 2:15–2:40 — WHO IT'S FOR + WHY IT MATTERS (Agent for Good)
 **[SCREEN]** A large volunteer/OSS-style community sidebar.
 **(VO)** "Receipts is for the communities that run on volunteers — no docs team, no wiki, no one
 paid to remember. It turns every buried decision into an instant, sourced answer, so people stop
 re-arguing and newcomers stop getting five different answers."
 
-### 2:45–3:00 — CLOSE
+### 2:40–3:00 — CLOSE
 **[SCREEN]** The receipt card, then the name.
 **(VO)** "Receipts. Your community already answered this."
 
 ---
 
 **Capture notes:** run `bun run dev`, then `bun run stage` and wait ~15s for RTS to reindex before
-filming (per `DEMO_RUNBOOK.md`). Record the three summons live — the hero receipt, the private-channel
-"nothing on record," and (if built) the FAQ pin. The HyperFrames film in `marketing/demo-hf/` is your
-intro/outro/B-roll; the live captures are the proof.
+filming (per `DEMO_RUNBOOK.md`). Record the live captures — the hero receipt, the private-channel
+"nothing on record," and the "Pull receipts" message shortcut. The HyperFrames film in
+`marketing/demo-hf/` is your intro/outro/B-roll; the live captures are the proof.
+**⚠️ B-roll scope warning:** the HyperFrames film (`demo-hf/compositions/eng.html`) and the Remotion
+film (`demo/src/scenes/Demo.tsx`) both predate the scope-down and still contain a "P4: the deflect /
+the FAQ writes itself" segment (~23.0–29.6s in eng.html). That beat was CUT from the product — do NOT
+use the P4/deflect segment in the final video; use only the intro/outro clips.

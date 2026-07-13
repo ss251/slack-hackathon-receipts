@@ -8,3 +8,6 @@ dist/
 .output/
 marketing/demo/node_modules/
 marketing/demo/out/
+
+# raw demo recording takes (275MB of scene files)
+.demo-recording/

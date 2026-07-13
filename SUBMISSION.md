@@ -102,10 +102,6 @@ This is a "used it because it's load-bearing," not "bolted it on."
 - [x] **Does one thing well** — Receipts cites the prior decision. Already scoped tight; don't add features.
 - [x] **Native Block Kit UI** — receipt card uses section/context/actions blocks (`receipts.ts`), not a wall of text.
 - [x] **Required tech is load-bearing** — RTS is the product (see justification above).
-- [ ] **Decide the FAQ-deflect beat** — the "asked & answered N×" → grow an FAQ canvas write-back
-      is speced but **not built**. It's the difference between a one-shot gag and something a
-      community keeps using (the retention story). Build it this week *or* cut it cleanly from the
-      video — don't show a half-built beat.
 - [ ] **Restore the live LLM path** — the Anthropic OAuth token expired, so keyword/judge run on
       heuristics. Drop a fresh `ANTHROPIC_API_KEY` in `.env.local` for a crisper demo.
 

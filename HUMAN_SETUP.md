@@ -34,7 +34,7 @@ In the sandbox, as **you** (the summoner):
    Post it, then post 1–2 later "wait did we decide X?" messages so it reads as asked-before.
 2. A **private** channel you are **NOT** a member of (have a second sandbox user create it) with a
    decision containing the word **"security audit"** — this is the ACL negative control.
-3. (Optional, for the full demo) a repeat question asked 3× so the FAQ-deflect beat fires.
+3. (Optional, for the full demo) a repeat question asked 3× so the "asked & answered N×" repeat-answer counter shows on the receipt card.
 
 ## 4 · Fill env + run the spike
 ```bash
